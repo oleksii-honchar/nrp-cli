@@ -43,3 +43,7 @@ var (
 	GrayBackground    = "\033[47m"
 	WhiteBackground   = "\033[107m"
 )
+
+func With(color, text string) string {
+	return color + text + Reset
+}

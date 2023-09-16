@@ -21,7 +21,7 @@ type PrettyHandler struct {
 }
 
 func (handler *PrettyHandler) Handle(ctx context.Context, rec slog.Record) error {
-	level := rec.Level.String() + " |"
+	level := rec.Level.String()
 
 	switch rec.Level {
 	case slog.LevelDebug:
@@ -33,6 +33,7 @@ func (handler *PrettyHandler) Handle(ctx context.Context, rec slog.Record) error
 	case slog.LevelError:
 		level = color.Red + level + color.Reset
 	}
+	level += " |"
 
 	fields := make(map[string]interface{}, rec.NumAttrs())
 	rec.Attrs(func(attr slog.Attr) bool {
@@ -46,10 +47,11 @@ func (handler *PrettyHandler) Handle(ctx context.Context, rec slog.Record) error
 		return err
 	}
 
-	timeStr := rec.Time.Format("2006/01/02 15:05:05.000")
+	// timeStr := rec.Time.Format("2006/01/02 15:05:05.000")
 	msg := color.White + rec.Message + color.Reset
 
-	line := fmt.Sprintf("%s %s %s", color.Gray247+timeStr+color.Reset, level, msg)
+	// line := fmt.Sprintf("%s %s %s", color.Gray247+timeStr+color.Reset, level, msg)
+	line := fmt.Sprintf("%s %s", level, msg)
 
 	if len(fields) > 0 {
 		line += " " + color.Yellow + string(jsonStr) + color.Reset
@@ -61,12 +63,15 @@ func (handler *PrettyHandler) Handle(ctx context.Context, rec slog.Record) error
 }
 
 func NewPrettyHandler(
+	prefix string,
 	out io.Writer,
 	opts PrettyHandlerOptions,
 ) *PrettyHandler {
+	normPrefix := TrimOrPadStringRight(prefix, 10) + " | "
+
 	handler := &PrettyHandler{
 		Handler: slog.NewJSONHandler(out, &opts.SlogOpts),
-		logger:  log.New(out, "", 0),
+		logger:  log.New(out, normPrefix, 0),
 	}
 
 	return handler

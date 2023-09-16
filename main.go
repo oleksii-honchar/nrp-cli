@@ -1,51 +1,34 @@
 package main
 
 import (
-	"os"
-	"path/filepath"
-
 	"beaver/blablo"
-	"beaver/blablo/color"
-
-	"gopkg.in/yaml.v2"
+	c "beaver/blablo/color"
+	"fmt"
+	configProcessor "nrp/config-processor"
+	"path/filepath"
 )
 
-type Config struct {
-	Configurations []struct {
-		Name          string `yaml:"name"`
-		ServerIP      string `yaml:"serverIp"`
-		ServerPort    int    `yaml:"serverPort"`
-		DomainName    string `yaml:"domainName"`
-		CORS          bool   `yaml:"cors,omitempty"`
-		BlockExploits bool   `yaml:"blockExploits,omitempty"`
-		HTTPS         struct {
-			Force bool `yaml:"force,omitempty"`
-			HSTS  bool `yaml:"hsts,omitempty"`
-		} `yaml:"https,omitempty"`
-	} `yaml:"configurations"`
-}
-
 func main() {
+	f := fmt.Sprintf
+	logger := blablo.NewLogger("nrp-cli")
+	logger.Info(c.With(c.GreenCyan49, "'Nginx reverse Proxy' cli tool v0.1"))
 
-	logger := blablo.NewLogger()
-	logger.Info(color.GreenCyan49 + "'Nginx reverse Proxy' cli tool v0.1" + color.Reset)
-
-	filePath := filepath.Join(".", "configs", "nrp.yaml")
-	file, err := os.Open(filePath)
+	nrpConfig, err := configProcessor.LoadBaseConfig(filepath.Join(".", "configs", "nrp.yaml"))
 	if err != nil {
-		logger.Error("Failed to open config file:", "err", err)
-		return
-	}
-	defer file.Close()
-
-	var config Config
-	decoder := yaml.NewDecoder(file)
-	err = decoder.Decode(&config)
-	if err != nil {
-		logger.Error("Failed to parse config file:", "err", err)
 		return
 	}
 
-	// Print the parsed configuration
-	logger.Info("Parsed configuration:", "config", config)
+	logger.Info("Generating nginx configs")
+	for idx, svcCfg := range nrpConfig.Services {
+		// nginxConfig, err := configProcessor.GenerateNginxConfig(svcCfg)
+		logger.Info(f("Processing %s for service: %s",
+			c.With(c.Cyan, f("[%v/%v]", idx+1, len(nrpConfig.Services))),
+			c.With(c.Cyan, svcCfg.Name)),
+		)
+
+		content, _ := configProcessor.GenerateNginxServerConfig(&svcCfg)
+		logger.Info("Saving content to file", "content", content)
+	}
+
+	logger.Info(c.With(c.Green, "Done ✨"))
 }
