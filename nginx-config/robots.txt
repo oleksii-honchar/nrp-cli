@@ -1,0 +1,20 @@
+User-agent: *
+Disallow: /wp-content/plugins/
+Disallow: /cgi-bin/
+Disallow: /wp-content/cache/
+Disallow: /search/
+Disallow: /ppc/
+Disallow: /email-signature/
+Disallow: /all-teams/
+Disallow: /assets/
+Disallow: /sv/
+Disallow: */category/
+Disallow: /wp-content/uploads/whitepapers/
+Disallow: */attachment/*
+Disallow: *.pdf
+
+User-agent: OpenAI-GPT-3
+Disallow: /
+
+User-agent: OpenAI-GPT-4
+Disallow: /

@@ -8,7 +8,7 @@ import (
 	"log"
 	"log/slog"
 
-	"beaver/blablo/color"
+	c "beaver/blablo/color"
 )
 
 type PrettyHandlerOptions struct {
@@ -25,13 +25,13 @@ func (handler *PrettyHandler) Handle(ctx context.Context, rec slog.Record) error
 
 	switch rec.Level {
 	case slog.LevelDebug:
-		level = color.Magenta + level + color.Reset
+		level = c.WithMagenta(level)
 	case slog.LevelInfo:
-		level = color.Blue + level + color.Reset
+		level = c.WithBlue(level)
 	case slog.LevelWarn:
-		level = color.Yellow + level + color.Reset
+		level = c.WithYellow(level)
 	case slog.LevelError:
-		level = color.Red + level + color.Reset
+		level = c.WithRed(level)
 	}
 	level += " |"
 
@@ -48,13 +48,13 @@ func (handler *PrettyHandler) Handle(ctx context.Context, rec slog.Record) error
 	}
 
 	// timeStr := rec.Time.Format("2006/01/02 15:05:05.000")
-	msg := color.White + rec.Message + color.Reset
+	msg := c.White + rec.Message + c.Reset
 
-	// line := fmt.Sprintf("%s %s %s", color.Gray247+timeStr+color.Reset, level, msg)
+	// line := fmt.Sprintf("%s %s %s", c.Gray247+timeStr+c.Reset, level, msg)
 	line := fmt.Sprintf("%s %s", level, msg)
 
 	if len(fields) > 0 {
-		line += " " + color.Yellow + string(jsonStr) + color.Reset
+		line += " " + c.Yellow + string(jsonStr) + c.Reset
 	}
 
 	handler.logger.Println(line)

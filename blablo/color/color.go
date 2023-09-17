@@ -47,3 +47,24 @@ var (
 func With(color, text string) string {
 	return color + text + Reset
 }
+func WithCyan(text string) string {
+	return With(Cyan, text)
+}
+func WithGreenCyan49(text string) string {
+	return With(GreenCyan49, text)
+}
+func WithGreen(text string) string {
+	return With(Green, text)
+}
+func WithMagenta(text string) string {
+	return With(Magenta, text)
+}
+func WithBlue(text string) string {
+	return With(Blue, text)
+}
+func WithRed(text string) string {
+	return With(Red, text)
+}
+func WithYellow(text string) string {
+	return With(Yellow, text)
+}

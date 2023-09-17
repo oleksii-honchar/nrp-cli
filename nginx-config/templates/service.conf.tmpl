@@ -1,0 +1,46 @@
+server {
+  set $config_name "{{.Name}}";
+  set $forward_scheme http;
+  set $server "{{.ServiceIP}}";
+  set $port {{.ServicePort}};
+  set $domain_name1 "{{.DomainName}}";
+
+  listen 80;
+  listen [::]:80;
+{{if .HTTPS.Use}}
+  listen 443 ssl;
+  listen [::]:443 ssl;
+{{end}}
+  http2 on;
+
+  server_name {{.DomainName}} www.{{.DomainName}};
+
+  access_log /var/log/nginx/access.log proxy;
+  error_log  /var/log/nginx/error.log warn; # to mute block-exploits notice spam
+
+  include /etc/nginx/includes/default-locations.conf;
+  include /etc/nginx/includes/block-exploits.conf;
+{{if .CORS}}
+  include /etc/nginx/includes/cors.conf;
+{{end}}
+  include /etc/nginx/includes/letsencrypt-acme-challenge.conf;
+
+{{if .HTTPS.Use}}
+{{if .HTTPS.Force}}
+  include /etc/nginx/includes/force-ssl.conf;
+{{end}}
+  include /etc/nginx/includes/ssl-ciphers.conf;
+  ssl_certificate /etc/letsencrypt/live/nrp2/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/nrp2/privkey.pem;
+{{end}}
+
+  location / {
+  {{if .HTTPS.Use}}
+    include /etc/nginx/includes/hsts.conf;
+  {{end}}
+    proxy_pass $forward_scheme://$server:$port$request_uri;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $http_connection;
+    include /etc/nginx/includes/common-proxy-pass.conf;
+  }
+}

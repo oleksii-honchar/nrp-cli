@@ -1,0 +1,79 @@
+body, html {
+    margin: 0 auto;
+    height: 100%;
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+}
+.content {
+    width: 35em;
+    margin: 0 auto;
+    height: 50%;
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.example-box {
+    background-image: linear-gradient(to bottom right, rgba(105, 247, 255, 0.99), #d0b3ff);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    color: #232323;
+    font-family: sans-serif;
+    font-weight: 200;
+    z-index: 1;
+}
+
+.example-box * {
+    z-index: 2;
+}
+
+h1 {
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.background-shapes {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 5076px;
+    background-size: 100%;
+    animation: 120s infiniteScroll linear infinite;
+    background-repeat-x: repeat;
+    background-image: url(bg-circles.svg);
+}
+
+@-webkit-keyframes infiniteScroll {
+    0% {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+        -webkit-transform: translate3d(0, -1692px, 0);
+        transform: translate3d(0, -1692px, 0);
+    }
+}
+
+@keyframes infiniteScroll {
+    0% {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+        -webkit-transform: translate3d(0, -1692px, 0);
+        transform: translate3d(0, -1692px, 0);
+    }
+}
