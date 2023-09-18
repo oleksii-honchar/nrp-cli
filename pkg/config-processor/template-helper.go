@@ -9,6 +9,7 @@ import (
 // var f = fmt.Sprintf
 var confTemplate *template.Template
 var defaultConfTemplate *template.Template
+var acmeChallengeTemplate *template.Template
 
 func loadTemplate(filePath string) (*template.Template, error) {
 	content, err := os.ReadFile(filePath)
@@ -23,7 +24,7 @@ func loadTemplate(filePath string) (*template.Template, error) {
 		return nil, err
 	}
 
-	logger.Info(f("Template loaded: %s", c.WithGreen(filePath)))
+	logger.Debug(f("Template loaded: %s", c.WithGreen(filePath)))
 
 	return tmpl, nil
 }
@@ -37,5 +38,11 @@ func loadConfTemplate(filePath string) (bool, error) {
 func loadDefaultConfTemplate(filePath string) (bool, error) {
 	var err error
 	defaultConfTemplate, err = loadTemplate(filePath)
+	return err == nil, err
+}
+
+func loadAcmeChallengeConfTemplate(filePath string) (bool, error) {
+	var err error
+	acmeChallengeTemplate, err = loadTemplate(filePath)
 	return err == nil, err
 }

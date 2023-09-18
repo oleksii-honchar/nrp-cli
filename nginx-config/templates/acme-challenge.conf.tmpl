@@ -1,0 +1,17 @@
+server {
+  set $config_name "acme-{{.Name}}";
+  set $forward_scheme http;
+  set $server 127.0.0.1;
+  set $domain_name1 "{{.DomainName}}";
+
+  listen 80;
+  listen [::]:80;
+
+  server_name {{.DomainName}} www.{{.DomainName}};
+
+  access_log /var/log/nginx/access.log static;
+  error_log  /var/log/nginx/error.log warn; # to mute block-exploits notice spam
+
+  include /etc/nginx/includes/default-locations.conf;
+  include /etc/nginx/includes/letsencrypt-acme-challenge.conf; # need to be ON for renew
+}

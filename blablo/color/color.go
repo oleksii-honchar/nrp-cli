@@ -50,6 +50,12 @@ func With(color, text string) string {
 func WithCyan(text string) string {
 	return With(Cyan, text)
 }
+func WithGray(text string) string {
+	return With(Gray, text)
+}
+func WithGray247(text string) string {
+	return With(Gray247, text)
+}
 func WithGreenCyan49(text string) string {
 	return With(GreenCyan49, text)
 }

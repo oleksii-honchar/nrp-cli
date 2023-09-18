@@ -19,3 +19,19 @@ help:
 
 run:
 	@go run main.go
+
+.ONE-SHELL:
+run-nrp: stop-nrp
+	@docker run -d --rm -p 80:80 -p 443:443 \
+		--name nginx-reverse-proxy \
+		-v ./nginx-config:/etc/nginx \
+		-v /etc/localtime:/etc/localtime:ro \
+		-v ./letsencrypt:/etc/letsencrypt \
+		tuiteraz/nginx-reverse-proxy:1.0;\
+	docker logs nginx-reverse-proxy
+
+stop-nrp:
+	@docker stop nginx-reverse-proxy || true
+
+test-nrp:
+	nginx -t -c $(PWD)/nginx-config/nginx.conf

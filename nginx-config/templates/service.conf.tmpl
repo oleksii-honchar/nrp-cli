@@ -23,7 +23,7 @@ server {
 {{if .CORS}}
   include /etc/nginx/includes/cors.conf;
 {{end}}
-  include /etc/nginx/includes/letsencrypt-acme-challenge.conf;
+  include /etc/nginx/includes/letsencrypt-acme-challenge.conf; # need to be ON for renew
 
 {{if .HTTPS.Use}}
 {{if .HTTPS.Force}}

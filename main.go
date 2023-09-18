@@ -5,8 +5,6 @@ import (
 	c "beaver/blablo/color"
 	"fmt"
 	configProcessor "nrp/config-processor"
-	"os"
-	"path/filepath"
 )
 
 var f = fmt.Sprintf
@@ -16,46 +14,42 @@ func main() {
 	logger := blablo.NewLogger("main")
 	logger.Info(c.WithGreenCyan49("'Nginx reverse Proxy' cli tool v0.1"))
 
-	ok, _ := configProcessor.Init("./nginx-config")
-	if !ok {
-		return
-	}
-
-	nrpConfig, err := configProcessor.LoadBaseConfig("./configs/nrp.yaml")
+	nrpConfig, err := configProcessor.Init()
 	if err != nil {
 		return
 	}
 
 	logger.Info("Generating nginx configs")
 
-	content, err := configProcessor.GenerateDefaultNginxConfig()
-	if err != nil {
-		return
-	}
-	filePath := filepath.Join(".", "nginx-config/conf.available", f("%v-%s.conf", 0, "default"))
-	if err := os.WriteFile(filePath, content.Bytes(), 0644); err != nil {
-		logger.Error(f("Saving content to file: %s", c.WithCyan(filePath)))
-	} else {
-		logger.Info(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(filePath)))
-	}
+	configProcessor.CreateDeafultConfFile()
 
+	// Process array of services
 	for idx, svcCfg := range nrpConfig.Services {
-		logger.Info(f("Processing %s for service: %s",
+		transportMode := c.WithGray247("[HTTP]")
+		if svcCfg.HTTPS.Use {
+			transportMode = c.WithYellow("[HTTPS]")
+		}
+
+		logger.Info(f("%s processing service: %s %s",
 			c.WithCyan(f("[%v/%v]", idx+1, len(nrpConfig.Services))),
-			c.WithCyan(svcCfg.Name)),
+			c.WithCyan(svcCfg.Name),
+			transportMode),
 		)
 
-		content, err := configProcessor.GenerateNginxServerConfig(&svcCfg)
-		if err != nil {
-			continue
+		//  Check/create certificates if HTTPS.Use = true
+		if svcCfg.HTTPS.Use {
+			if ok := configProcessor.CheckCertificateFiles(svcCfg.Name); !ok {
+				// need to create enw certs
+				if ok := configProcessor.CreateCertificateFiles(&svcCfg); !ok {
+					// something wrong with Letsencrypt certbot processing - turning off https
+					svcCfg.HTTPS.Use = false
+					logger.Info(f("HTTPS turned %s for service: %s", c.WithRed("off"), c.WithCyan(svcCfg.Name)))
+				}
+			}
+			// if certs are in place or https turned off - continue to geneate nginx server config
 		}
 
-		filePath := filepath.Join(".", "nginx-config/conf.available", f("%v-%s.conf", idx+1, svcCfg.Name))
-		if err := os.WriteFile(filePath, content.Bytes(), 0644); err != nil {
-			logger.Error(f("Saving content to file: %s", c.WithCyan(filePath)))
-		} else {
-			logger.Info(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(filePath)))
-		}
+		configProcessor.CreateServiceConfFile(idx, &svcCfg)
 	}
 
 	logger.Info(c.WithGreenCyan49("Done ✨"))
