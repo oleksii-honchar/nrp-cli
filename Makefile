@@ -20,8 +20,16 @@ help:
 run:
 	@go run main.go
 
+.ONESHELL:
+run-all: ## run nrp-cli -> nrp
+	@go run main.go
+	@docker compose down
+	@docker compose up --build --remove-orphans -d
+	@docker compose logs --follow
+
+
 .ONE-SHELL:
-run-nrp: stop-nrp
+run-nginx: stop-nginx
 	@docker run -d --rm -p 80:80 -p 443:443 \
 		--name nginx-reverse-proxy \
 		-v ./nginx-config:/etc/nginx \
@@ -30,8 +38,8 @@ run-nrp: stop-nrp
 		tuiteraz/nginx-reverse-proxy:1.0;\
 	docker logs nginx-reverse-proxy
 
-stop-nrp:
+stop-nginx:
 	@docker stop nginx-reverse-proxy || true
 
-test-nrp:
+test-nginx:
 	nginx -t -c $(PWD)/nginx-config/nginx.conf

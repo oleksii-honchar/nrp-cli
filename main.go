@@ -27,7 +27,7 @@ func main() {
 	for idx, svcCfg := range nrpConfig.Services {
 		transportMode := c.WithGray247("[HTTP]")
 		if svcCfg.HTTPS.Use {
-			transportMode = c.WithYellow("[HTTPS]")
+			transportMode = c.WithOrange("[HTTPS]")
 		}
 
 		logger.Info(f("%s processing service: %s %s",
@@ -51,6 +51,8 @@ func main() {
 
 		configProcessor.CreateServiceConfFile(idx, &svcCfg)
 	}
+
+	configProcessor.CopyConfFiles()
 
 	logger.Info(c.WithGreenCyan49("Done ✨"))
 }

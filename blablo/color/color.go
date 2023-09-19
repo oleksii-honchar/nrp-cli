@@ -18,13 +18,14 @@ var (
 	Red         = "\033[0;31m"
 	Green       = "\033[0;32m"
 	Yellow      = "\033[38;5;228m"
+	Orange      = "\033[38;5;166m"
 	Blue        = "\033[34m"
 	Magenta     = "\033[35m"
 	Cyan        = "\033[36m"
 	GreenCyan50 = "\033[38;5;50m"
 	GreenCyan49 = "\033[38;5;49m"
-	Gray        = "\033[37m"
 	Gray254     = "\033[38;5;254m"
+	Gray        = "\033[38;5;253m"
 	Gray250     = "\033[38;5;250m"
 	Gray247     = "\033[38;5;247m"
 	White       = "\033[97m"
@@ -53,6 +54,9 @@ func WithCyan(text string) string {
 func WithGray(text string) string {
 	return With(Gray, text)
 }
+func WithGray250(text string) string {
+	return With(Gray250, text)
+}
 func WithGray247(text string) string {
 	return With(Gray247, text)
 }
@@ -73,4 +77,7 @@ func WithRed(text string) string {
 }
 func WithYellow(text string) string {
 	return With(Yellow, text)
+}
+func WithOrange(text string) string {
+	return With(Orange, text)
 }

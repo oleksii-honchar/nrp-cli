@@ -1,4 +1,4 @@
-module npr/npr-cli
+module nrp/nrp-cli
 
 go 1.21.1
 

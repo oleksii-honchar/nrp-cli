@@ -2,20 +2,18 @@ package configProcessor
 
 import (
 	c "beaver/blablo/color"
-	"fmt"
-	"net/http"
 	"os/exec"
 	"strings"
 	"time"
 )
 
 func startNginx(cmd string) (bool, error) {
-	logger.Debug(f("Starting NRP with command: %s", c.WithYellow(cmd)))
+	logger.Debug(f("Starting Nginx with command: %s", c.WithYellow(cmd)))
 	proc := exec.Command("bash", "-c", cmd)
 
 	err := proc.Start()
 	if err != nil {
-		logger.Error(f("Error starting NRP: %s", err))
+		logger.Debug(f("Error starting Nginx: %s", err))
 		return false, err
 	}
 
@@ -36,40 +34,32 @@ func getNginxStatus(cmd string) (int, error) {
 
 	output, err := proc.CombinedOutput()
 	if err != nil {
-		logger.Error(f("Error starting NRP: %s", c.WithRed(err.Error())))
-		return 500, err
-	}
-	logger.Debug(f("Nginx status : %s", c.WithCyan(strings.TrimSpace(string(output)))))
-
-	var lastStatusCode int
-	var res *http.Response
-	retries := 3
-
-	for i := 0; i < retries; i++ {
-		res, err = http.Get("http://127.0.0.1")
-		if err != nil {
-			logger.Error("Error making HTTP request", "err", err)
-			time.Sleep(1 * time.Second)
-			continue
-		}
-
-		if res.StatusCode != 200 {
-			logger.Debug(f("Nginx http request status: %s", c.WithCyan(fmt.Sprint(res.StatusCode))))
-			res.Body.Close()
-			lastStatusCode = res.StatusCode
-			time.Sleep(1 * time.Second)
-			continue
-		}
-
-		lastStatusCode = res.StatusCode
-		break
+		logger.Debug(f("Error checking status from Nginx: %s", c.WithRed(err.Error())))
+	} else {
+		logger.Debug(f("Nginx status : %s", c.WithCyan(strings.TrimSpace(string(output)))))
+		return 200, nil
 	}
 
-	return lastStatusCode, nil
+	statusCode := retryRequestUntil200("http://127.0.0.1", 10, 2)
+
+	return statusCode, nil
+}
+func getNginxLogs(cmd string) (bool, error) {
+	logger.Debug(f("Getting Nginx logs with command: %s", c.WithYellow(cmd)))
+	proc := exec.Command("bash", "-c", cmd)
+
+	output, err := proc.CombinedOutput()
+	if err != nil {
+		logger.Error(f("Error getting logs from Nginx: %s", c.WithRed(err.Error())))
+		return false, err
+	}
+	logger.Debug(f("Nginx logs : \n%s", c.WithGray247((string(output)))))
+
+	return true, nil
 }
 
 func stopNginx(cmd string) (bool, error) {
-	logger.Debug(f("Stopping NRP with command: %s", c.WithYellow(cmd)))
+	logger.Debug(f("Stopping Nginx with command: %s", c.WithYellow(cmd)))
 	proc := exec.Command("bash", "-c", cmd)
 
 	_, err := proc.CombinedOutput()

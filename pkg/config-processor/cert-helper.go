@@ -27,6 +27,7 @@ func CheckCertificateFiles(configName string) bool {
 }
 
 func requestCertificate(svcConfig *NrpServiceConfig) (bool, error) {
+	var res bool
 	var data = NewCertRequest{
 		DryRun:   nrpConfig.Letsencrypt.DryRun,
 		BaseDir:  nrpConfig.Letsencrypt.BasePath,
@@ -40,24 +41,38 @@ func requestCertificate(svcConfig *NrpServiceConfig) (bool, error) {
 	var buf bytes.Buffer
 	err := tmpl.Execute(&buf, data)
 	if err != nil {
-		logger.Error(f("Error creating request certificate cmd: %s", err))
+		logger.Error(f("Error creating request certificate cmd: %s", c.WithRed(err.Error())))
 		return false, err
 	}
 	cmd := buf.String()
 
 	logger.Debug(f("Requesting certificate for domain: %s", c.WithYellow(svcConfig.DomainName)))
-	logger.Debug("With data", "data", data)
+	logger.Debug(f("With data: %s%+v%s", c.Yellow, data, c.Reset))
 	logger.Debug(f("With cmd: %s", c.WithYellow(cmd)))
 
 	proc := exec.Command("bash", "-c", cmd)
 
 	output, err := proc.CombinedOutput()
-	logger.Info(f("Certbot response: \n%s", c.WithYellow(string(output))))
+	var requestStatus string
+	if checkIfStrContainsAny(
+		string(output),
+		[]string{"Successfully received certificate", "The dry run was successful"},
+	) {
+		requestStatus = c.WithGreen("success")
+		res = true
+	} else {
+		requestStatus = c.WithRed("failed")
+		res = false
+	}
+
+	logger.Info(f("Certbot request status: %s", requestStatus))
+	logger.Debug(f("Certbot request response: \n%s", c.WithGray247(string(output))))
 	if err != nil {
-		logger.Error(f("Error requesting certificate: %s", err))
+		logger.Error(f("Error requesting certificate: %s", c.WithRed(err.Error())))
 		return false, err
 	}
-	return true, nil
+
+	return res, nil
 }
 
 /*
@@ -69,7 +84,7 @@ Request certificates using certbot
 - If success - return true, else -> false
 */
 func CreateCertificateFiles(svcConfig *NrpServiceConfig) bool {
-	// defer removeAcmeChallengeServerConfigFile(svcConfig)
+	defer removeAcmeChallengeServerConfigFile(svcConfig)
 	defer stopNginx(nrpConfig.Nginx.StopCmd)
 
 	logger.Info(f("Creating certificates for: %s", c.WithCyan(svcConfig.Name)))
@@ -84,15 +99,19 @@ func CreateCertificateFiles(svcConfig *NrpServiceConfig) bool {
 		return false
 	}
 
-	if status, err := getNginxStatus(nrpConfig.Nginx.StatusCmd); err != nil && status != 200 {
+	if status, err := getNginxStatus(nrpConfig.Nginx.StatusCmd); err != nil || status != 200 {
+		getNginxLogs(nrpConfig.Nginx.LogsCmd)
 		return false
 	} else {
 		logger.Info(f("Nginx status: %s", c.WithCyan(fmt.Sprint(status))))
 	}
 
 	// let's make certbot to do its job
-	_, _ = requestCertificate(svcConfig)
+	res, _ := requestCertificate(svcConfig)
+	if res {
+		res = CheckCertificateFiles(svcConfig.Name)
+	}
 
 	logger.Info(f("Finished creating the certificates"))
-	return true
+	return res
 }

@@ -30,8 +30,8 @@ server {
   include /etc/nginx/includes/force-ssl.conf;
 {{end}}
   include /etc/nginx/includes/ssl-ciphers.conf;
-  ssl_certificate /etc/letsencrypt/live/nrp2/fullchain.pem;
-  ssl_certificate_key /etc/letsencrypt/live/nrp2/privkey.pem;
+  ssl_certificate /etc/letsencrypt/live/{{.Name}}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{.Name}}/privkey.pem;
 {{end}}
 
   location / {

@@ -18,6 +18,7 @@ type NrpNginxConfig struct {
 	StartCmd   string `yaml:"startCmd"`
 	StopCmd    string `yaml:"stopCmd"`
 	StatusCmd  string `yaml:"statusCmd"`
+	LogsCmd    string `yaml:"logsCmd"`
 	ConfigPath string `yaml:"configPath"`
 }
 

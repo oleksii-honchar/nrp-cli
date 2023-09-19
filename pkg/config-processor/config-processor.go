@@ -3,6 +3,7 @@ package configProcessor
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -188,4 +189,56 @@ func removeAcmeChallengeServerConfigFile(svcConfig *NrpServiceConfig) bool {
 
 	logger.Debug(f("Successfully deleted file: %s", c.WithCyan(filePath)))
 	return true
+}
+
+/*
+Assume *.conf files already in conf.available.
+Now they will be copied to conf.d for nginx to use them
+*/
+func CopyConfFiles() {
+	logger.Debug(f("Copying service conf files to folder: %s", c.WithCyan("conf.d")))
+
+	confDPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.d")
+	if err := os.RemoveAll(confDPath); err != nil {
+		logger.Error(f("Failed to clean folder:", c.WithCyan(confDPath)), "err", err)
+	}
+	err := os.MkdirAll(confDPath, os.ModePerm)
+	if err != nil {
+		logger.Error(f("Failed to re-create folder (%s): %s", c.WithCyan(confDPath), c.WithRed(err.Error())))
+	}
+
+	confAvailablePath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.available")
+	files, err := os.ReadDir(confAvailablePath)
+	if err != nil {
+		logger.Error(f("Failed to read conf.available directory: %v", c.WithRed(err.Error())))
+	}
+
+	for _, file := range files {
+		src := filepath.Join(confAvailablePath, file.Name())
+		dst := filepath.Join(confDPath, file.Name())
+
+		in, err := os.Open(src)
+		if err != nil {
+			logger.Error(f("Failed to open source file: %v", c.WithRed(err.Error())))
+		}
+		defer in.Close()
+
+		out, err := os.Create(dst)
+		if err != nil {
+			logger.Error(f("Failed to create destination file: %v", c.WithRed(err.Error())))
+		}
+		defer out.Close()
+
+		_, err = io.Copy(out, in)
+		if err != nil {
+			logger.Error(f("Failed to copy file: %v", c.WithRed(err.Error())))
+		}
+
+		if err == nil {
+			logger.Debug(f("Succesfuly copied file: %s", c.WithGreen(dst)))
+		}
+	}
+
+	logger.Info(f("Finished copying files to folder: %s", c.WithCyan(confDPath)))
+
 }
