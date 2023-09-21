@@ -22,3 +22,4 @@ nrp.yaml
 conf.d
 conf.available
 letsencrypt
+.history

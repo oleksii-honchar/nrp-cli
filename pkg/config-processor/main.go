@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"beaver/blablo"
-	c "beaver/blablo/color"
+	"github.com/oleksii-honchar/blablo"
+	c "github.com/oleksii-honchar/coteco"
 
 	"gopkg.in/yaml.v2"
 )

@@ -17,8 +17,11 @@ help:
 
 # Docker
 
-run:
+run: ## run
 	@go run main.go
+
+go-publish: ## publish blablo
+	GOPROXY=proxy.golang.org go list -m github.com/oleksii-honchar/nrp-cli@v0.1.0
 
 .ONESHELL:
 run-all: ## run nrp-cli -> nrp
@@ -29,7 +32,7 @@ run-all: ## run nrp-cli -> nrp
 
 
 .ONE-SHELL:
-run-nginx: stop-nginx
+run-nginx: stop-nginx ## run nginx
 	@docker run -d --rm -p 80:80 -p 443:443 \
 		--name nginx-reverse-proxy \
 		-v ./nginx-config:/etc/nginx \
@@ -38,8 +41,8 @@ run-nginx: stop-nginx
 		tuiteraz/nginx-reverse-proxy:1.0;\
 	docker logs nginx-reverse-proxy
 
-stop-nginx:
+stop-nginx: ## stop nginx
 	@docker stop nginx-reverse-proxy || true
 
-test-nginx:
+test-nginx: ## test nginx
 	nginx -t -c $(PWD)/nginx-config/nginx.conf

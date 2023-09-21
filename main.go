@@ -1,10 +1,11 @@
 package main
 
 import (
-	"beaver/blablo"
-	c "beaver/blablo/color"
+	configProcessor "config-processor"
 	"fmt"
-	configProcessor "nrp/config-processor"
+
+	"github.com/oleksii-honchar/blablo"
+	c "github.com/oleksii-honchar/coteco"
 )
 
 var f = fmt.Sprintf

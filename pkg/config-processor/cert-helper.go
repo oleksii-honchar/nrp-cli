@@ -1,13 +1,14 @@
 package configProcessor
 
 import (
-	c "beaver/blablo/color"
 	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"text/template"
+
+	c "github.com/oleksii-honchar/coteco"
 )
 
 func CheckCertificateFiles(configName string) bool {

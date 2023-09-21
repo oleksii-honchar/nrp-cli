@@ -1,8 +1,8 @@
 package configProcessor
 
 import (
-	c "beaver/blablo/color"
 	"fmt"
+	c "github.com/oleksii-honchar/coteco"
 	"net/http"
 	"time"
 )

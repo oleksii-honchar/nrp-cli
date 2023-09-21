@@ -1,14 +1,8 @@
-module nrp/nrp-cli
+module github.com/oleksii-honchar/nrp-cli
 
 go 1.21.1
 
 require (
-	beaver/blablo v0.0.0-00010101000000-000000000000
-	nrp/config-processor v0.0.0-00010101000000-000000000000
+	github.com/oleksii-honchar/blablo v0.1.0
+	github.com/oleksii-honchar/coteco v0.1.2
 )
-
-require gopkg.in/yaml.v2 v2.4.0 // indirect
-
-replace beaver/blablo => ./blablo
-
-replace nrp/config-processor => ./pkg/config-processor
