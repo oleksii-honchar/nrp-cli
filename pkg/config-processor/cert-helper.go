@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	stringsHelpers "string-helpers"
 	"text/template"
 
 	c "github.com/oleksii-honchar/coteco"
@@ -31,7 +32,7 @@ func requestCertificate(svcConfig *NrpServiceConfig) (bool, error) {
 	var res bool
 	var data = NewCertRequest{
 		DryRun:   nrpConfig.Letsencrypt.DryRun,
-		BaseDir:  nrpConfig.Letsencrypt.BasePath,
+		BasePath: nrpConfig.Letsencrypt.BasePath,
 		CertName: svcConfig.Name,
 		Email:    nrpConfig.Letsencrypt.Email,
 		Domain:   svcConfig.DomainName,
@@ -55,7 +56,7 @@ func requestCertificate(svcConfig *NrpServiceConfig) (bool, error) {
 
 	output, err := proc.CombinedOutput()
 	var requestStatus string
-	if checkIfStrContainsAny(
+	if stringsHelpers.CheckIfStrContainsAny(
 		string(output),
 		[]string{"Successfully received certificate", "The dry run was successful"},
 	) {
@@ -90,12 +91,16 @@ func CreateCertificateFiles(svcConfig *NrpServiceConfig) bool {
 
 	logger.Info(f("Creating certificates for: %s", c.WithCyan(svcConfig.Name)))
 
+	if ok := cleanNginxConfDPath(); !ok {
+		return false
+	}
 	if ok := createAcmeChallengeServerConfigFile(svcConfig); !ok {
 		return false
 	}
 
 	// When starting nginx from dev: nrp-cli based docker config used
 	// When starting nginx from prod: nrp-cli will be inside of container and nginx will be available directly
+	// all nginx interactiob cmd descirbed in `nrp.yaml.nginx` section
 	if ok, _ := startNginx(nrpConfig.Nginx.StartCmd); !ok {
 		return false
 	}

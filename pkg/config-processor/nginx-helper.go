@@ -1,6 +1,9 @@
 package configProcessor
 
 import (
+	"os"
+	"path/filepath"
+
 	c "github.com/oleksii-honchar/coteco"
 
 	"os/exec"
@@ -70,4 +73,18 @@ func stopNginx(cmd string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func cleanNginxConfDPath() bool {
+	confDPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.d")
+	if err := os.RemoveAll(confDPath); err != nil {
+		logger.Error(f("Failed to clean folder:", c.WithCyan(confDPath)), "err", err)
+		return false
+	}
+	err := os.MkdirAll(confDPath, os.ModePerm)
+	if err != nil {
+		logger.Error(f("Failed to re-create folder (%s): %s", c.WithCyan(confDPath), c.WithRed(err.Error())))
+		return false
+	}
+	return true
 }

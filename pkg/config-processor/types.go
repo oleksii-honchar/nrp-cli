@@ -27,7 +27,6 @@ type LetsencryptConfig struct {
 	Email              string `yaml:"email"`
 	BasePath           string `yaml:"basePath"`
 	CertFilesPath      string `yaml:"certFilesPath"`
-	AcmeChallengePath  string `yaml:"acmeChallengePath"`
 	RequestCertCmdTmpl string `yaml:"requestCertCmdTmpl"`
 	RenewCertCmd       string `yaml:"renewCertCmd"`
 }
@@ -40,7 +39,7 @@ type NrpConfig struct {
 
 type NewCertRequest struct {
 	DryRun   bool
-	BaseDir  string
+	BasePath string
 	CertName string
 	Email    string
 	Domain   string

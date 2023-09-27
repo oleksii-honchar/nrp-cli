@@ -14,8 +14,6 @@ services:
       - ./nginx-config:/etc/nginx
       - /etc/localtime:/etc/localtime:ro
       - ./letsencrypt:/etc/letsencrypt
-#      - ./supervisord:/etc/supervisor
-#      - ./cron/crontab:/etc/crontabs/root
     logging:
       driver: "json-file"
       options:

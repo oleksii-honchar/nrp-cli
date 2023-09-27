@@ -4,6 +4,10 @@ import (
 	configProcessor "config-processor"
 	"fmt"
 
+	cmdArgs "cmd-args"
+
+	lv "latest-version"
+
 	"github.com/oleksii-honchar/blablo"
 	c "github.com/oleksii-honchar/coteco"
 )
@@ -11,9 +15,12 @@ import (
 var f = fmt.Sprintf
 
 func main() {
+	if ok := cmdArgs.Init(); !ok {
+		return
+	}
 
-	logger := blablo.NewLogger("main")
-	logger.Info(c.WithGreenCyan49("'Nginx reverse Proxy' cli tool v0.1"))
+	logger := blablo.NewLogger("main", cmdArgs.LogLevel)
+	logger.Info(c.WithGreenCyan49(f("'Nginx reverse Proxy' cli tool %s", c.WithCyan(lv.LatestVersion))))
 
 	nrpConfig, err := configProcessor.Init()
 	if err != nil {

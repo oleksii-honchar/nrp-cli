@@ -2,6 +2,7 @@ package configProcessor
 
 import (
 	"bytes"
+	cmdArgs "cmd-args"
 	"fmt"
 	"io"
 	"os"
@@ -10,7 +11,7 @@ import (
 	"github.com/oleksii-honchar/blablo"
 	c "github.com/oleksii-honchar/coteco"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 var f = fmt.Sprintf
@@ -20,11 +21,11 @@ var nrpConfig *NrpConfig
 
 // Should be called first before any other pkg function calls
 func Init() (*NrpConfig, error) {
-	logger = blablo.NewLogger("cfg-prcsr")
+	logger = blablo.NewLogger("cfg-prcsr", cmdArgs.LogLevel)
 	logger.Info("Init 'Config Processor'")
 
 	var err error
-	nrpConfig, err = loadBaseConfig("./configs/nrp.yaml")
+	nrpConfig, err = loadBaseConfig(cmdArgs.ConfigPath)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +78,7 @@ func loadBaseConfig(configPath string) (*NrpConfig, error) {
 	decoder := yaml.NewDecoder(file)
 	err = decoder.Decode(&config)
 	if err != nil {
-		logger.Error("Failed to parse config file:", "err", err)
+		logger.Error("Failed to parse config file:", "err", err.Error())
 		return nil, err
 	}
 
@@ -144,7 +145,7 @@ func CreateServiceConfFile(idx int, svcConfig *NrpServiceConfig) bool {
 		return false
 	}
 
-	filePath := filepath.Join(".", "nginx-config/conf.available", f("%v-%s.conf", idx+1, svcConfig.Name))
+	filePath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.available", f("%v-%s.conf", idx+1, svcConfig.Name))
 	if err := os.WriteFile(filePath, content.Bytes(), 0644); err != nil {
 		logger.Error(f("Saving content to file: %s", c.WithCyan(filePath)))
 		return false
@@ -195,22 +196,19 @@ func removeAcmeChallengeServerConfigFile(svcConfig *NrpServiceConfig) bool {
 Assume *.conf files already in conf.available.
 Now they will be copied to conf.d for nginx to use them
 */
-func CopyConfFiles() {
+func CopyConfFiles() bool {
 	logger.Debug(f("Copying service conf files to folder: %s", c.WithCyan("conf.d")))
 
-	confDPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.d")
-	if err := os.RemoveAll(confDPath); err != nil {
-		logger.Error(f("Failed to clean folder:", c.WithCyan(confDPath)), "err", err)
-	}
-	err := os.MkdirAll(confDPath, os.ModePerm)
-	if err != nil {
-		logger.Error(f("Failed to re-create folder (%s): %s", c.WithCyan(confDPath), c.WithRed(err.Error())))
+	if ok := cleanNginxConfDPath(); !ok {
+		return false
 	}
 
+	confDPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.d")
 	confAvailablePath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.available")
 	files, err := os.ReadDir(confAvailablePath)
 	if err != nil {
 		logger.Error(f("Failed to read conf.available directory: %v", c.WithRed(err.Error())))
+		return false
 	}
 
 	for _, file := range files {
@@ -240,5 +238,5 @@ func CopyConfFiles() {
 	}
 
 	logger.Info(f("Finished copying files to folder: %s", c.WithCyan(confDPath)))
-
+	return true
 }

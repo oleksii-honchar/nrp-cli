@@ -3,4 +3,7 @@ go 1.21.1
 use (
 	.
 	./pkg/config-processor
+	./pkg/cmd-args
+	./pkg/strings-helper
+	./pkg/latest-version
 )
