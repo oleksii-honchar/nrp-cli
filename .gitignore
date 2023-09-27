@@ -23,3 +23,6 @@ conf.d
 conf.available
 letsencrypt
 .history
+nrp-cli-darwin
+nrp-cli-linux
+*.tar.gz
