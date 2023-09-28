@@ -18,7 +18,7 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 run: ## run
-	@go run main.go -log-level=debug -config=./configs/nrp.yaml -defaults-mode=dev
+	@go run main.go -log-level=debug -defaults-mode=dev
 
 latest-version:
 	@echo "latest-version.txt = $(LATEST_VERSION)"
