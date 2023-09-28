@@ -8,6 +8,8 @@ import (
 
 	lv "latest-version"
 
+	cd "config-defaults"
+
 	"github.com/oleksii-honchar/blablo"
 	c "github.com/oleksii-honchar/coteco"
 )
@@ -17,6 +19,7 @@ var logger *blablo.Logger
 
 var ConfigPath string = "./nrp.yaml"
 var LogLevel string = string(blablo.LevelInfo)
+var DefaultsMode string = cd.DefaultsProdMode
 
 func isValidLogLevel(level string) bool {
 	validLevels := []string{
@@ -30,9 +33,10 @@ func isValidLogLevel(level string) bool {
 }
 
 func Init() bool {
+	flag.StringVar(&ConfigPath, "config", ConfigPath, "Specify 'config' path value: './nrp.yaml'(default)")
+	flag.StringVar(&LogLevel, "log-level", LogLevel, "Specify 'log-level' value: info(default)|error|warn|debug")
+	flag.StringVar(&DefaultsMode, "defaults-mode", DefaultsMode, "Specify 'defaults-mode' value : prod(default)|dev. When 'dev' defaults used - nginx cmds has a form of docker cmds. When 'prod' default used - nginx cmds assume nrp-cli executed in conatiner and nginx available directly.")
 
-	flag.StringVar(&ConfigPath, "config", "./nrp.yaml", "Specify 'config' path value")
-	flag.StringVar(&LogLevel, "log-level", string(blablo.LevelInfo), "Specify 'log-level' value")
 	showVersion1 := flag.Bool("v", false, "Show current version")
 	showVersion2 := flag.Bool("version", false, "Show current version")
 
@@ -59,6 +63,7 @@ func Init() bool {
 
 	logger.Debug(c.WithGray247(f("cmd arg 'config' = %s", ConfigPath)))
 	logger.Debug(c.WithGray247(f("cmd arg 'log-level' = %s", LogLevel)))
+	logger.Debug(c.WithGray247(f("cmd arg 'defaults-mode' = %s", DefaultsMode)))
 
 	return true
 }

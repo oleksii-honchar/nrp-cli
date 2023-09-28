@@ -1,0 +1,20 @@
+nginx:
+  startCmd: "nginx"
+  stopCmd: "nginx -s stop"
+  statusCmd: "pgrep nginx >/dev/null && echo 'Nginx started' || (>&2 echo 'Nginx not found!' && exit 1)"
+  logsCmd: "echo 'no log available from within container'" # since nginx logs forwarded to /proc/1/fd/1
+  configPath: "/etc/nginx"
+letsencrypt:
+  dryRun: false # = {{.DryRun}}
+  basePath: "/etc/letsencrypt" # = {{.BasePath}}
+  certFilesPath: "/etc/letsencrypt/live"
+  requestCertCmdTmpl: "\
+    mkdir -p {{.BasePath}}; \
+    certbot certonly --non-interactive --webroot --cert-name {{.CertName}} \
+      --agree-tos --email {{.Email}} --domains {{.Domain}} \
+      --webroot-path {{.BasePath}} \
+      --cert-path {{.BasePath}} \
+      --config-dir {{.BasePath}} \
+      --work-dir {{.BasePath}} \
+      --logs-dir {{.BasePath}} \
+      {{if .DryRun}}--dry-run{{end}}"

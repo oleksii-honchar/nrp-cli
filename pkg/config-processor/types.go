@@ -1,6 +1,7 @@
 package configProcessor
 
 type NrpServiceConfig struct {
+	SchemaVersion string `yaml:"schemaVersion"`
 	Name          string `yaml:"name"`
 	ServiceIP     string `yaml:"serviceIp"`
 	ServicePort   int    `yaml:"servicePort"`

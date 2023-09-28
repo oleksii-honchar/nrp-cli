@@ -13,3 +13,13 @@ If https needed, first you need to add service domain forward to `127.0.0.1` in 
 
 127.0.0.1 your.domain.tld
 ```
+
+# How to deploy manually
+
+- before commit/merge changes to `main`, bump `pkg/latest-version/latest-version.txt` version
+- commit/merge changes to main
+- create tag = `latest-version.txt`, e.g. `v0.3.0`
+- `git push --tags`
+- build binaries: `make build-n-compress-all` (they gitingored)
+- make release for latest tag in github and attach `*.tar.gz` binaries 
+- update `Dockerfile` in [nginx-reverse-proxy](https://github.com/oleksii-honchar/nginx-reverse-proxy) to fetch new `nrp-cli` version

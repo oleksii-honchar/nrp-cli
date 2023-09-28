@@ -6,4 +6,5 @@ use (
 	./pkg/cmd-args
 	./pkg/strings-helper
 	./pkg/latest-version
+	./pkg/config-defaults
 )

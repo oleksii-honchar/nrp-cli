@@ -27,7 +27,7 @@ func main() {
 		return
 	}
 
-	logger.Info("Generating nginx configs")
+	logger.Info(f("Generating nginx configs in '%s'", c.WithCyan("conf.available")))
 
 	configProcessor.CreateDeafultConfFile()
 

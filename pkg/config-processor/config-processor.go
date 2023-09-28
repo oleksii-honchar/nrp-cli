@@ -3,10 +3,14 @@ package configProcessor
 import (
 	"bytes"
 	cmdArgs "cmd-args"
+	cd "config-defaults"
+
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/coryb/figtree"
 
 	"github.com/oleksii-honchar/blablo"
 	c "github.com/oleksii-honchar/coteco"
@@ -22,14 +26,26 @@ var nrpConfig *NrpConfig
 // Should be called first before any other pkg function calls
 func Init() (*NrpConfig, error) {
 	logger = blablo.NewLogger("cfg-prcsr", cmdArgs.LogLevel)
-	logger.Info("Init 'Config Processor'")
+	logger.Debug("Init 'Config Processor'")
+
+	logger.Debug("Loading config and merging with defaults")
 
 	var err error
-	nrpConfig, err = loadBaseConfig(cmdArgs.ConfigPath)
+	var nrpBaseConfig *NrpConfig
+	nrpBaseConfig, err = loadNrpConfig(cmdArgs.ConfigPath)
 	if err != nil {
 		return nil, err
 	}
 
+	nrpConfig, err = loadNrpDefaultsConfig(cmdArgs.DefaultsMode)
+	if err != nil {
+		return nil, err
+	}
+
+	figtree.Merge(nrpConfig, nrpBaseConfig)
+	logger.Debug(c.WithGreen("Configs merged successfuly"))
+
+	logger.Info(f("Found (%s) services configuration", c.WithGreen(fmt.Sprint(len(nrpConfig.Services)))))
 	logger.Debug(f("Certificates base folder: %s", c.WithCyan(nrpConfig.Letsencrypt.CertFilesPath)))
 
 	confAvailablePath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.available")
@@ -61,12 +77,31 @@ func Init() (*NrpConfig, error) {
 		finalErr = err3
 	}
 
-	logger.Info("Init completed")
+	logger.Debug("Init completed")
 
 	return nrpConfig, finalErr
 }
 
-func loadBaseConfig(configPath string) (*NrpConfig, error) {
+func loadNrpDefaultsConfig(defaultsMode string) (*NrpConfig, error) {
+	var defaultsContent []byte
+	if defaultsMode == cd.DefaultsDevMode {
+		defaultsContent = cd.NrpConfigDevDefaults
+	} else if defaultsMode == cd.DefaultsProdMode {
+		defaultsContent = cd.NrpConfigProdDefaults
+	}
+
+	logger.Debug(f("Parsing [%s] defaults config", c.WithCyan(defaultsMode)))
+
+	var nrpDefaultsConfig NrpConfig
+	err := yaml.Unmarshal(defaultsContent, &nrpDefaultsConfig)
+	if err != nil {
+		logger.Error("Failed to parse defaults config content:", "err", err.Error())
+		return nil, err
+	}
+	return &nrpDefaultsConfig, nil
+}
+
+func loadNrpConfig(configPath string) (*NrpConfig, error) {
 	file, err := os.Open(configPath)
 	if err != nil {
 		logger.Error("Failed to open config file:", "err", err)
@@ -83,7 +118,6 @@ func loadBaseConfig(configPath string) (*NrpConfig, error) {
 	}
 
 	logger.Debug(f("Loaded %s", c.WithCyan("nrp.yaml")))
-	logger.Info(f("Found (%s) services configuration", c.WithGreen(fmt.Sprint(len(config.Services)))))
 	return &config, nil
 }
 
