@@ -85,4 +85,4 @@ Here is the flow diagram for main logic:
 
 ## Troubleshooting
 
-- Explore `Makefile` target to help you debug nginx & nrp-cli behaviour
+- Explore `Makefile` targets to help you debug nginx & nrp-cli behaviour
