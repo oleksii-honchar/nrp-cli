@@ -20,6 +20,7 @@ var logger *blablo.Logger
 var ConfigPath string = "./nrp.yaml"
 var LogLevel string = string(blablo.LevelInfo)
 var DefaultsMode string = cd.DefaultsProdMode
+var CertbotWait bool = false
 
 func isValidLogLevel(level string) bool {
 	validLevels := []string{
@@ -36,6 +37,7 @@ func Init() bool {
 	flag.StringVar(&ConfigPath, "config", ConfigPath, "Specify 'config' path value: './nrp.yaml'(default)")
 	flag.StringVar(&LogLevel, "log-level", LogLevel, "Specify 'log-level' value: info(default)|error|warn|debug")
 	flag.StringVar(&DefaultsMode, "defaults-mode", DefaultsMode, "Specify 'defaults-mode' value : prod(default)|dev. When 'dev' defaults used - nginx cmds has a form of docker cmds. When 'prod' default used - nginx cmds assume nrp-cli executed in conatiner and nginx available directly.")
+	flag.BoolVar(&CertbotWait, "certbot-wait", false, "When making certbot call, wait 5min right before the request to check nginx")
 
 	showVersion1 := flag.Bool("v", false, "Show current version")
 	showVersion2 := flag.Bool("version", false, "Show current version")

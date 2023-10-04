@@ -38,26 +38,18 @@ build-darwin: ## build for linux
 go-publish: ## publish blablo
 	GOPROXY=proxy.golang.org go list -m github.com/oleksii-honchar/nrp-cli@$(LATEST_VERSION)
 
-.ONESHELL:
-run-all: ## run nrp-cli -> nrp
-	@go run main.go
-	@docker compose down
-	@docker compose up --build --remove-orphans -d
-	@docker compose logs --follow
-
-
 .ONE-SHELL:
 run-nginx: stop-nginx ## run nginx
-	@docker run -d --rm -p 80:80 -p 443:443 \
-		--name nginx-reverse-proxy \
-		-v ./nginx-config:/etc/nginx \
-		-v /etc/localtime:/etc/localtime:ro \
-		-v ./letsencrypt:/etc/letsencrypt \
-		tuiteraz/nginx-reverse-proxy:1.0;\
-	docker logs nginx-reverse-proxy
+	@docker run --rm -p 80:80 -p 443:443 \
+      --name nginx-more \
+      -v ./nginx-config:/etc/nginx \
+      -v /etc/localtime:/etc/localtime:ro \
+      -v ./letsencrypt:/etc/letsencrypt \
+      tuiteraz/nginx-more:1.25.2-2
+	docker logs nginx-more
 
 stop-nginx: ## stop nginx
-	@docker stop nginx-reverse-proxy || true
+	@docker stop nginx-more || true
 
 test-nginx: ## test nginx
 	nginx -t -c $(PWD)/nginx-config/nginx.conf

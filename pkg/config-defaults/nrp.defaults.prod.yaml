@@ -9,7 +9,7 @@ letsencrypt:
   basePath: "/etc/letsencrypt" # = {{.BasePath}}
   certFilesPath: "/etc/letsencrypt/live"
   requestCertCmdTmpl: "\
-    mkdir -p {{.BasePath}}; \
+    mkdir -p {{.BasePath}}/.well-known/acme-challenge; \
     certbot certonly --non-interactive --webroot --cert-name {{.CertName}} \
       --agree-tos --email {{.Email}} --domains {{.Domain}} \
       --webroot-path {{.BasePath}} \
