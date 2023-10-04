@@ -2,12 +2,14 @@ package configProcessor
 
 import (
 	"bytes"
+	cmdArgs "cmd-args"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	stringsHelpers "string-helpers"
 	"text/template"
+	"time"
 
 	c "github.com/oleksii-honchar/coteco"
 )
@@ -110,6 +112,16 @@ func CreateCertificateFiles(svcConfig *NrpServiceConfig) bool {
 		return false
 	} else {
 		logger.Info(f("Nginx status: %s", c.WithCyan(fmt.Sprint(status))))
+	}
+
+	// In case you have certbot hanging:
+	// - use sleep here to check if nginx resolving acme path
+	// - also make sure there are no nginx on :80 port from other porjects
+	// - put test file in .well-known/acme-challenge path
+	// - call `http get http://your.domain.tld/.well-known/acme-challenge/test` to check if it's resolved
+	if cmdArgs.CertbotWait {
+		logger.Debug("Sleeping for 5 min. Go and check everything you need before certbot will make request")
+		time.Sleep(5 * time.Minute)
 	}
 
 	// let's make certbot to do its job

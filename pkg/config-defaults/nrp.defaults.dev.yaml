@@ -1,23 +1,23 @@
 nginx:
   startCmd: "\
-    docker stop nginx-reverse-proxy > /dev/nul; \
-    docker rm nginx-reverse-proxy > /dev/nul; \
+    docker stop nginx-more > /dev/nul; \
+    docker rm nginx-more > /dev/nul; \
     docker run --rm -p 80:80 -p 443:443 \
-      --name nginx-reverse-proxy \
+      --name nginx-more \
       -v ./nginx-config:/etc/nginx \
       -v /etc/localtime:/etc/localtime:ro \
       -v ./letsencrypt:/etc/letsencrypt \
-      tuiteraz/nginx-reverse-proxy:1.0"
-  stopCmd: "docker stop nginx-reverse-proxy || true"
-  statusCmd: "docker inspect --format='{{.State.Status}}' nginx-reverse-proxy"
-  logsCmd: "docker logs nginx-reverse-proxy"
+      tuiteraz/nginx-more:1.25.2-2"
+  stopCmd: "docker stop nginx-more || true"
+  statusCmd: "docker inspect --format='{{.State.Status}}' nginx-more"
+  logsCmd: "docker logs nginx-more"
   configPath: "./nginx-config"
 letsencrypt:
   dryRun: false
   basePath: "./letsencrypt"
   certFilesPath: "./letsencrypt/live"
   requestCertCmdTmpl: "\
-    mkdir -p {{.BasePath}}; \
+    mkdir -p {{.BasePath}}/.well-known/acme-challenge; \
     certbot certonly --non-interactive --webroot --cert-name {{.CertName}} \
       --agree-tos --email {{.Email}} --domains {{.Domain}} \
       --webroot-path {{.BasePath}} \
