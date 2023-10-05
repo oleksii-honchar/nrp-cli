@@ -5,7 +5,7 @@ nginx:
   logsCmd: "echo 'no log available from within container'" # since nginx logs forwarded to /proc/1/fd/1
   configPath: "/etc/nginx"
 letsencrypt:
-  dryRun: false # = {{.DryRun}}
+  dryRun: no # = {{.DryRun}}
   basePath: "/etc/letsencrypt" # = {{.BasePath}}
   certFilesPath: "/etc/letsencrypt/live"
   requestCertCmdTmpl: "\
@@ -17,8 +17,13 @@ letsencrypt:
       --config-dir {{.BasePath}} \
       --work-dir {{.BasePath}} \
       --logs-dir {{.BasePath}} \
-      {{if .DryRun}}--dry-run{{end}}"
+      {{if eq .DryRun \"yes\"}}--dry-run{{end}}"
 squid:
-  use: true
-  useDnsmasq: true
+  use: yes
+  useDnsmasq: yes
   configPath: "/etc/squid"
+  port: 3128
+dnsmasq:
+  configPath: "/etc"
+supervisor:
+  configPath: "/etc/supervisor"

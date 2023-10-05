@@ -8,10 +8,11 @@ server=1.0.0.1
 server=1.1.1.1
 server=8.8.8.8
 
-dhcp-option=252,"http://squid:$SQUID_PORT/wpad.dat"
+dhcp-option=252,"http://127.0.0.1:{{.SquidPort}}/wpad.dat"
 
 log-queries=normal
 log-facility=-
 
-# address option will be generated below by bash script based on nrp.yaml
-
+{{range .Domains}}
+address=/{{.}}/127.0.0.1
+{{end}}

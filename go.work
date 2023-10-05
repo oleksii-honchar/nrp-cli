@@ -8,4 +8,6 @@ use (
 	./pkg/latest-version
 	./pkg/config-defaults
 	./pkg/squid-config-processor
+	./pkg/dnsmasq-config-processor
+	./pkg/supervisor-config-processor
 )

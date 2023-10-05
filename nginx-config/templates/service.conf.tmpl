@@ -7,7 +7,7 @@ server {
 
   listen 80;
   listen [::]:80;
-{{if .HTTPS.Use}}
+{{if eq .HTTPS.Use "yes"}}
   listen 443 ssl;
   listen [::]:443 ssl;
 {{end}}
@@ -20,13 +20,13 @@ server {
 
   include /etc/nginx/includes/default-locations.conf;
   include /etc/nginx/includes/block-exploits.conf;
-{{if .CORS}}
+{{if eq .CORS "yes"}}
   include /etc/nginx/includes/cors.conf;
 {{end}}
   include /etc/nginx/includes/letsencrypt-acme-challenge.conf; # need to be ON for renew
 
-{{if .HTTPS.Use}}
-{{if .HTTPS.Force}}
+{{if eq .HTTPS.Use "yes"}}
+{{if eq .HTTPS.Force "yes"}}
   include /etc/nginx/includes/force-ssl.conf;
 {{end}}
   include /etc/nginx/includes/ssl-ciphers.conf;
@@ -35,7 +35,7 @@ server {
 {{end}}
 
   location / {
-  {{if .HTTPS.Use}}
+  {{if eq .HTTPS.Use "yes"}}
     include /etc/nginx/includes/hsts.conf;
   {{end}}
     proxy_pass $forward_scheme://$server:$port$request_uri;

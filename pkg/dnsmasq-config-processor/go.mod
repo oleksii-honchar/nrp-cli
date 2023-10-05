@@ -1,4 +1,4 @@
-module cmd-args
+module dnsmasq-config-processor
 
 go 1.21.1
 

@@ -6,12 +6,12 @@ type NrpServiceConfig struct {
 	ServiceIP     string `yaml:"serviceIp"`
 	ServicePort   int    `yaml:"servicePort"`
 	DomainName    string `yaml:"domainName"`
-	CORS          bool   `yaml:"cors,omitempty"`
-	BlockExploits bool   `yaml:"blockExploits,omitempty"`
+	CORS          string `yaml:"cors"`
+	BlockExploits string `yaml:"blockExploits"`
 	HTTPS         struct {
-		Use   bool `yaml:"use,omitempty"`
-		Force bool `yaml:"force,omitempty"`
-		HSTS  bool `yaml:"hsts,omitempty"`
+		Use   string `yaml:"use"`
+		Force string `yaml:"force"`
+		HSTS  string `yaml:"hsts"`
 	} `yaml:"https,omitempty"`
 }
 
@@ -24,7 +24,7 @@ type NrpNginxConfig struct {
 }
 
 type LetsencryptConfig struct {
-	DryRun             bool   `yaml:"dryRun"`
+	DryRun             string `yaml:"dryRun"`
 	Email              string `yaml:"email"`
 	BasePath           string `yaml:"basePath"`
 	CertFilesPath      string `yaml:"certFilesPath"`
@@ -34,24 +34,29 @@ type LetsencryptConfig struct {
 
 type NrpSquidConfig struct {
 	ConfigPath string `yaml:"configPath"`
-	Use        bool   `yaml:"use"`
-	UseDnsmasq bool   `yaml:"useDnsmasq"`
+	Use        string `yaml:"use"`
+	UseDnsmasq string `yaml:"useDnsmasq"`
+	Port       int    `yaml:"port"`
 }
 
 type NrpDnsmasqConfig struct {
 	ConfigPath string `yaml:"configPath"`
 }
+type NrpSupervisorConfig struct {
+	ConfigPath string `yaml:"configPath"`
+}
 
 type NrpConfig struct {
-	Nginx       NrpNginxConfig     `yaml:"nginx"`
-	Letsencrypt LetsencryptConfig  `yaml:"letsencrypt"`
-	Services    []NrpServiceConfig `yaml:"services"`
-	Squid       NrpSquidConfig     `yaml:"squid"`
-	Dnsmasq     NrpDnsmasqConfig   `yaml:"dnsmasq"`
+	Nginx       NrpNginxConfig      `yaml:"nginx"`
+	Letsencrypt LetsencryptConfig   `yaml:"letsencrypt"`
+	Services    []NrpServiceConfig  `yaml:"services"`
+	Squid       NrpSquidConfig      `yaml:"squid"`
+	Dnsmasq     NrpDnsmasqConfig    `yaml:"dnsmasq"`
+	Supervisor  NrpSupervisorConfig `yaml:"supervisor"`
 }
 
 type NewCertRequest struct {
-	DryRun   bool
+	DryRun   string
 	BasePath string
 	CertName string
 	Email    string

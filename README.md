@@ -50,20 +50,30 @@ make run-all
 
 ## CMD options
 
+- `-h, -help` - shows cmd help
+- `-v, -version` - show build version
 - `-log-level` - info(default)|error|warn|debug
 - `-config` - path to `nrp.yaml` - './nrp.yaml'(default)
 - `-defaults-mode` - dev|prod(default) with nginx & letsencrypt param wil be used. "Dev" used only for development
-- `-v, -version` - show build version
-- `-h, -help` - shows cmd help
+- `-certbot-wait` - debug only option, will make `nrp-cli` sleep for 5 min right before making certbot request
 
 ## Adding new service to nrp.yaml
 
-### HTTPS
-If https needed, first you need to add service domain forward to `127.0.0.1` in `/etc/hosts`. Otherwise certbot will be unable to retreive certificates. This happens, when your ISP connection doesn't support NAT-loopback. For example:
-```text
-# /etc/hosts
+Just add new array item in `nrp.yaml`:
+- Keep `name` unique 
+- `domainName` should contain only single domain, multiple domains not tested
+- rest of the options will add related nginx includes to the service config
 
-127.0.0.1 your.domain.tld
+```
+- name: service2
+  serviceIp: 192.168.0.12
+  servicePort: 9100
+  domainName: service2.domain.tld
+  cors: true
+  https: 
+    use: true
+    force: true 
+    hsts: true
 ```
 
 ## How to deploy manually
@@ -85,4 +95,5 @@ Here is the flow diagram for main logic:
 
 ## Troubleshooting
 
+- When used without NRP, `nrp-cli` will fail when requesting SSL cert via Certbot. Domains need to be added to `/etc/hosts`.
 - Explore `Makefile` targets to help you debug nginx & nrp-cli behaviour

@@ -8,7 +8,9 @@ import (
 
 	lv "latest-version"
 
+	dnsmasqCfgProc "dnsmasq-config-processor"
 	squidCfgProc "squid-config-processor"
+	supervisorCfgProc "supervisor-config-processor"
 
 	"github.com/oleksii-honchar/blablo"
 	c "github.com/oleksii-honchar/coteco"
@@ -36,7 +38,7 @@ func main() {
 	// Process array of services
 	for idx, svcCfg := range nrpConfig.Services {
 		transportMode := c.WithGray247("[HTTP]")
-		if svcCfg.HTTPS.Use {
+		if svcCfg.HTTPS.Use == "yes" {
 			transportMode = c.WithOrange("[HTTPS]")
 		}
 
@@ -47,12 +49,12 @@ func main() {
 		)
 
 		//  Check/create certificates if HTTPS.Use = true
-		if svcCfg.HTTPS.Use {
+		if svcCfg.HTTPS.Use == "yes" {
 			if ok := configProcessor.CheckCertificateFiles(svcCfg.Name); !ok {
 				// need to create enw certs
 				if ok := configProcessor.CreateCertificateFiles(&svcCfg); !ok {
 					// something wrong with Letsencrypt certbot processing - turning off https
-					svcCfg.HTTPS.Use = false
+					svcCfg.HTTPS.Use = "no"
 					logger.Info(f("HTTPS turned %s for service: %s", c.WithRed("off"), c.WithCyan(svcCfg.Name)))
 				}
 			}
@@ -64,7 +66,9 @@ func main() {
 
 	configProcessor.CopyConfFiles()
 
-	_ = squidCfgProc.GenerateSquidConfig(nrpConfig)
+	_ = squidCfgProc.GenerateConfig(nrpConfig)
+	_ = dnsmasqCfgProc.GenerateConfig(nrpConfig)
+	_ = supervisorCfgProc.GenerateConfig(nrpConfig)
 
 	logger.Info(c.WithGreenCyan49("Done ✨"))
 }

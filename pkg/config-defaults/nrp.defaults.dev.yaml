@@ -13,7 +13,7 @@ nginx:
   logsCmd: "docker logs nginx-more"
   configPath: "./nginx-config"
 letsencrypt:
-  dryRun: false
+  dryRun: no
   basePath: "./letsencrypt"
   certFilesPath: "./letsencrypt/live"
   requestCertCmdTmpl: "\
@@ -25,8 +25,13 @@ letsencrypt:
       --config-dir {{.BasePath}} \
       --work-dir {{.BasePath}} \
       --logs-dir {{.BasePath}} \
-      {{if .DryRun}}--dry-run{{end}}"
+      {{if eq .DryRun \"yes\"}}--dry-run{{end}}"
 squid:
-  use: true
-  useDnsmasq: true
-  configPath: "./squid-config"
+  use: yes
+  useDnsmasq: yes
+  configPath: "./output"
+  port: 3128
+dnsmasq:
+  configPath: "./output"
+supervisor:
+  configPath: "./output"

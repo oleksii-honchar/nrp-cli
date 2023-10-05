@@ -1,4 +1,4 @@
-package squidConfigProcessor
+package supervisorConfigProcessor
 
 import (
 	"bytes"
@@ -16,35 +16,31 @@ import (
 	c "github.com/oleksii-honchar/coteco"
 )
 
-//go:embed squid.conf.tmpl
-var SquidConfTmpl []byte
+//go:embed supervisord.conf.tmpl
+var SupervisorConfTmpl []byte
 
 var f = fmt.Sprintf
 var logger *blablo.Logger
 
 func GenerateConfig(config *cfgProc.NrpConfig) bool {
-	logger = blablo.NewLogger("squid-cfg", string(cmdArgs.LogLevel))
-	logger.Debug(f("Processing Squid config: %s%+v%s", c.Yellow, config.Squid, c.Reset))
-	if config.Squid.Use != "yes" {
-		logger.Debug(f("Squid config is disabled. Skipping config generation."))
-		return true
-	}
+	logger = blablo.NewLogger("supvsr-cfg", string(cmdArgs.LogLevel))
+	logger.Debug(f("Processing 'supervisor' config %s%+v%s", c.Yellow, config.Supervisor, c.Reset))
 
-	confTemplate, err := template.New("squid-config").Parse(string(SquidConfTmpl))
+	confTemplate, err := template.New("supervisor-config").Parse(string(SupervisorConfTmpl))
 	if err != nil {
-		logger.Error(f("Error creating squid config tmpl: %s", c.WithRed(err.Error())))
+		logger.Error(f("Error creating 'supervisor' config tmpl: %s", c.WithRed(err.Error())))
 		return false
 	}
 
 	var content bytes.Buffer
-	err = confTemplate.Execute(&content, config.Squid)
+	err = confTemplate.Execute(&content, config)
 	if err != nil {
-		logger.Error(f("Failed to generate squid config: %s", c.WithRed(err.Error())))
+		logger.Error(f("Failed to generate 'supervisor' config: %s", c.WithRed(err.Error())))
 		return false
 	}
 	// logger.Debug(f("Generated (%s) bytes of config data", c.WithGreen(fmt.Sprint(content.Len()))))
 
-	filePath := filepath.Join(config.Squid.ConfigPath, "squid.conf")
+	filePath := filepath.Join(config.Supervisor.ConfigPath, "supervisord.conf")
 	if err := os.WriteFile(filePath, content.Bytes(), 0644); err != nil {
 		logger.Error(f("Saving content to file (%s): %s", c.WithCyan(filePath), c.WithRed(err.Error())))
 		return false
@@ -52,7 +48,7 @@ func GenerateConfig(config *cfgProc.NrpConfig) bool {
 		logger.Debug(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(filePath)))
 	}
 
-	logger.Info(c.WithGreen(f("Squid config generation completed")))
+	logger.Info(c.WithGreen(f("Supervisor config generation completed")))
 
 	return true
 }

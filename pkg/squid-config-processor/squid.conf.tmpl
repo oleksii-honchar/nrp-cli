@@ -1,12 +1,12 @@
 # Squid normally listens to port 3128
-http_port $SQUID_PORT
+http_port {{.Port}}
 
 # We setup an ACL that matches all IP addresses
 acl all src all
 
-{{if .UseDnsmasq}}
+{{if eq .UseDnsmasq "yes"}}
 # for all-in-one container only
-dns_nameservers localhost
+dns_nameservers 127.0.0.1
 {{end}}
 
 
@@ -14,7 +14,7 @@ dns_nameservers localhost
 http_access allow all
 
 # for human readable time format
-logformat combined1 %tl | %>a %[ui %[un "%rm %ru HTTP/%rv" %>Hs %<st "%{Referer}>h" "%{User-Agent}>h" %Ss:%Sh
+logformat combined1 squid      | %tl | %>a %[ui %[un "%rm %ru HTTP/%rv" %>Hs %<st "%{Referer}>h" "%{User-Agent}>h" %Ss:%Sh
 access_log /var/log/squid/squid_access_log_pipe combined1
 cache_log /var/log/squid/squid_cache_log_pipe combined1
 

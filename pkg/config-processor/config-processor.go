@@ -32,17 +32,18 @@ func Init() (*NrpConfig, error) {
 
 	var err error
 	var nrpBaseConfig *NrpConfig
-	nrpBaseConfig, err = loadNrpConfig(cmdArgs.ConfigPath)
+	nrpConfig, err = loadNrpConfig(cmdArgs.ConfigPath)
 	if err != nil {
 		return nil, err
 	}
 
-	nrpConfig, err = loadNrpDefaultsConfig(cmdArgs.DefaultsMode)
+	nrpBaseConfig, err = loadNrpDefaultsConfig(cmdArgs.DefaultsMode)
 	if err != nil {
 		return nil, err
 	}
 
 	figtree.Merge(nrpConfig, nrpBaseConfig)
+	// figtree.Merge(nrpBaseConfig, nrpConfig)
 	logger.Debug(c.WithGreen("Configs merged successfuly"))
 
 	logger.Info(f("Found (%s) services configuration", c.WithGreen(fmt.Sprint(len(nrpConfig.Services)))))
