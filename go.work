@@ -7,4 +7,5 @@ use (
 	./pkg/strings-helper
 	./pkg/latest-version
 	./pkg/config-defaults
+	./pkg/squid-config-processor
 )

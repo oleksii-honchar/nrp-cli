@@ -32,10 +32,22 @@ type LetsencryptConfig struct {
 	RenewCertCmd       string `yaml:"renewCertCmd"`
 }
 
+type NrpSquidConfig struct {
+	ConfigPath string `yaml:"configPath"`
+	Use        bool   `yaml:"use"`
+	UseDnsmasq bool   `yaml:"useDnsmasq"`
+}
+
+type NrpDnsmasqConfig struct {
+	ConfigPath string `yaml:"configPath"`
+}
+
 type NrpConfig struct {
 	Nginx       NrpNginxConfig     `yaml:"nginx"`
 	Letsencrypt LetsencryptConfig  `yaml:"letsencrypt"`
 	Services    []NrpServiceConfig `yaml:"services"`
+	Squid       NrpSquidConfig     `yaml:"squid"`
+	Dnsmasq     NrpDnsmasqConfig   `yaml:"dnsmasq"`
 }
 
 type NewCertRequest struct {

@@ -8,6 +8,8 @@ import (
 
 	lv "latest-version"
 
+	squidCfgProc "squid-config-processor"
+
 	"github.com/oleksii-honchar/blablo"
 	c "github.com/oleksii-honchar/coteco"
 )
@@ -61,6 +63,8 @@ func main() {
 	}
 
 	configProcessor.CopyConfFiles()
+
+	_ = squidCfgProc.GenerateSquidConfig(nrpConfig)
 
 	logger.Info(c.WithGreenCyan49("Done ✨"))
 }

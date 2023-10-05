@@ -26,3 +26,7 @@ letsencrypt:
       --work-dir {{.BasePath}} \
       --logs-dir {{.BasePath}} \
       {{if .DryRun}}--dry-run{{end}}"
+squid:
+  use: true
+  useDnsmasq: true
+  configPath: "./squid-config"
