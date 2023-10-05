@@ -66,6 +66,7 @@ func Init() bool {
 	logger.Debug(c.WithGray247(f("cmd arg 'config' = %s", ConfigPath)))
 	logger.Debug(c.WithGray247(f("cmd arg 'log-level' = %s", LogLevel)))
 	logger.Debug(c.WithGray247(f("cmd arg 'defaults-mode' = %s", DefaultsMode)))
+	logger.Debug(c.WithGray247(f("cmd arg 'certbot-wait' = %s", CertbotWait)))
 
 	return true
 }
