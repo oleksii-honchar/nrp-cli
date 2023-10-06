@@ -3,10 +3,9 @@ package supervisorConfigProcessor
 import (
 	"bytes"
 	cmdArgs "cmd-args"
-	cfgProc "config-processor"
+	"config"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	_ "embed"
 
@@ -22,7 +21,7 @@ var SupervisorConfTmpl []byte
 var f = fmt.Sprintf
 var logger *blablo.Logger
 
-func GenerateConfig(config *cfgProc.NrpConfig) bool {
+func GenerateConfig(config *config.NrpConfig) bool {
 	logger = blablo.NewLogger("supvsr-cfg", string(cmdArgs.LogLevel))
 	logger.Debug(f("Processing 'supervisor' config %s%+v%s", c.Yellow, config.Supervisor, c.Reset))
 
@@ -40,15 +39,14 @@ func GenerateConfig(config *cfgProc.NrpConfig) bool {
 	}
 	// logger.Debug(f("Generated (%s) bytes of config data", c.WithGreen(fmt.Sprint(content.Len()))))
 
-	filePath := filepath.Join(config.Supervisor.ConfigPath, "supervisord.conf")
-	if err := os.WriteFile(filePath, content.Bytes(), 0644); err != nil {
-		logger.Error(f("Saving content to file (%s): %s", c.WithCyan(filePath), c.WithRed(err.Error())))
+	if err := os.WriteFile(config.Supervisor.ConfigPath, content.Bytes(), 0644); err != nil {
+		logger.Error(f("Saving content to file (%s): %s", c.WithCyan(config.Supervisor.ConfigPath), c.WithRed(err.Error())))
 		return false
 	} else {
-		logger.Debug(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(filePath)))
+		logger.Debug(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(config.Supervisor.ConfigPath)))
 	}
 
-	logger.Info(c.WithGreen(f("Supervisor config generation completed")))
+	logger.Info(c.WithGreen(f("Config generation completed for %s", c.WithCyan("'supervisor'"))))
 
 	return true
 }

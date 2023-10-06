@@ -3,10 +3,9 @@ package dnsmasqConfigProcessor
 import (
 	"bytes"
 	cmdArgs "cmd-args"
-	cfgProc "config-processor"
+	"config"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	_ "embed"
 
@@ -22,7 +21,7 @@ var DnsmasqConfTmpl []byte
 var f = fmt.Sprintf
 var logger *blablo.Logger
 
-func getUniqueDomains(config *cfgProc.NrpConfig) []string {
+func getUniqueDomains(config *config.NrpConfig) []string {
 	uniqueMap := make(map[string]bool)
 	uniqueStrings := []string{}
 
@@ -36,7 +35,7 @@ func getUniqueDomains(config *cfgProc.NrpConfig) []string {
 	return uniqueStrings
 }
 
-func GenerateConfig(config *cfgProc.NrpConfig) bool {
+func GenerateConfig(config *config.NrpConfig) bool {
 	logger = blablo.NewLogger("dnsmsq-cfg", string(cmdArgs.LogLevel))
 	logger.Debug(f("Processing Dnsmasq config: %s%+v%s", c.Yellow, config.Dnsmasq, c.Reset))
 	if config.Squid.UseDnsmasq != "yes" {
@@ -66,15 +65,14 @@ func GenerateConfig(config *cfgProc.NrpConfig) bool {
 	}
 	// logger.Debug(f("Generated (%s) bytes of config data", c.WithGreen(fmt.Sprint(content.Len()))))
 
-	filePath := filepath.Join(config.Dnsmasq.ConfigPath, "dnsmasq.conf")
-	if err := os.WriteFile(filePath, content.Bytes(), 0644); err != nil {
-		logger.Error(f("Saving content to file (%s): %s", c.WithCyan(filePath), c.WithRed(err.Error())))
+	if err := os.WriteFile(config.Dnsmasq.ConfigPath, content.Bytes(), 0644); err != nil {
+		logger.Error(f("Saving content to file (%s): %s", c.WithCyan(config.Dnsmasq.ConfigPath), c.WithRed(err.Error())))
 		return false
 	} else {
-		logger.Debug(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(filePath)))
+		logger.Debug(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(config.Dnsmasq.ConfigPath)))
 	}
 
-	logger.Info(c.WithGreen(f("Dnsmasq config generation completed")))
+	logger.Info(c.WithGreen(f("Config generation completed for %s", c.WithCyan("'dnsmasq'"))))
 
 	return true
 }

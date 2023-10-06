@@ -2,12 +2,14 @@ go 1.21.1
 
 use (
 	.
-	./pkg/config-processor
-	./pkg/cmd-args
-	./pkg/strings-helper
-	./pkg/latest-version
+	./pkg/config
 	./pkg/config-defaults
-	./pkg/squid-config-processor
+	./pkg/cmd-args
+	./pkg/cron-config-processor
 	./pkg/dnsmasq-config-processor
+	./pkg/latest-version
+	./pkg/nginx-config-processor
+	./pkg/squid-config-processor
+	./pkg/strings-helper
 	./pkg/supervisor-config-processor
 )

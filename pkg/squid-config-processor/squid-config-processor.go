@@ -3,10 +3,9 @@ package squidConfigProcessor
 import (
 	"bytes"
 	cmdArgs "cmd-args"
-	cfgProc "config-processor"
+	"config"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	_ "embed"
 
@@ -22,7 +21,7 @@ var SquidConfTmpl []byte
 var f = fmt.Sprintf
 var logger *blablo.Logger
 
-func GenerateConfig(config *cfgProc.NrpConfig) bool {
+func GenerateConfig(config *config.NrpConfig) bool {
 	logger = blablo.NewLogger("squid-cfg", string(cmdArgs.LogLevel))
 	logger.Debug(f("Processing Squid config: %s%+v%s", c.Yellow, config.Squid, c.Reset))
 	if config.Squid.Use != "yes" {
@@ -44,15 +43,14 @@ func GenerateConfig(config *cfgProc.NrpConfig) bool {
 	}
 	// logger.Debug(f("Generated (%s) bytes of config data", c.WithGreen(fmt.Sprint(content.Len()))))
 
-	filePath := filepath.Join(config.Squid.ConfigPath, "squid.conf")
-	if err := os.WriteFile(filePath, content.Bytes(), 0644); err != nil {
-		logger.Error(f("Saving content to file (%s): %s", c.WithCyan(filePath), c.WithRed(err.Error())))
+	if err := os.WriteFile(config.Squid.ConfigPath, content.Bytes(), 0644); err != nil {
+		logger.Error(f("Saving content to file (%s): %s", c.WithCyan(config.Squid.ConfigPath), c.WithRed(err.Error())))
 		return false
 	} else {
-		logger.Debug(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(filePath)))
+		logger.Debug(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(config.Squid.ConfigPath)))
 	}
 
-	logger.Info(c.WithGreen(f("Squid config generation completed")))
+	logger.Info(c.WithGreen(f("Config generation completed for %s", c.WithCyan("'squid'"))))
 
 	return true
 }

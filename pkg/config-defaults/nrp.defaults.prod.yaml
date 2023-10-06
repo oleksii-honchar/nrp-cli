@@ -1,3 +1,5 @@
+supervisor:
+  configPath: "/etc/supervisor/supervisord.conf"
 nginx:
   startCmd: "nginx"
   stopCmd: "nginx -s stop"
@@ -21,9 +23,9 @@ letsencrypt:
 squid:
   use: yes
   useDnsmasq: yes
-  configPath: "/etc/squid"
+  configPath: "/etc/squid/squid.conf"
   port: 3128
 dnsmasq:
-  configPath: "/etc"
-supervisor:
-  configPath: "/etc/supervisor"
+  configPath: "/etc/dnsmasq.conf"
+cron:
+  configPath: "/etc/crontabs/root"

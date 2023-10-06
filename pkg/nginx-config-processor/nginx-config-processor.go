@@ -1,50 +1,25 @@
-package configProcessor
+package nginxConfigProcessor
 
 import (
 	"bytes"
 	cmdArgs "cmd-args"
-	cd "config-defaults"
+	"config"
 
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 
-	"github.com/coryb/figtree"
-
 	"github.com/oleksii-honchar/blablo"
 	c "github.com/oleksii-honchar/coteco"
-
-	"gopkg.in/yaml.v3"
 )
 
 var f = fmt.Sprintf
 var logger *blablo.Logger
 
-var nrpConfig *NrpConfig
-
-// Should be called first before any other pkg function calls
-func Init() (*NrpConfig, error) {
+func Init(nrpConfig *config.NrpConfig) bool {
 	logger = blablo.NewLogger("cfg-prcsr", cmdArgs.LogLevel)
-	logger.Debug("Init 'Config Processor'")
-
-	logger.Debug("Loading config and merging with defaults")
-
-	var err error
-	var nrpBaseConfig *NrpConfig
-	nrpConfig, err = loadNrpConfig(cmdArgs.ConfigPath)
-	if err != nil {
-		return nil, err
-	}
-
-	nrpBaseConfig, err = loadNrpDefaultsConfig(cmdArgs.DefaultsMode)
-	if err != nil {
-		return nil, err
-	}
-
-	figtree.Merge(nrpConfig, nrpBaseConfig)
-	// figtree.Merge(nrpBaseConfig, nrpConfig)
-	logger.Debug(c.WithGreen("Configs merged successfuly"))
+	logger.Debug("Init 'Nginx Processor'")
 
 	logger.Info(f("Found (%s) services configuration", c.WithGreen(fmt.Sprint(len(nrpConfig.Services)))))
 	logger.Debug(f("Certificates base folder: %s", c.WithCyan(nrpConfig.Letsencrypt.CertFilesPath)))
@@ -59,67 +34,18 @@ func Init() (*NrpConfig, error) {
 	}
 	logger.Debug(f("Folder cleaned: %s", c.WithGreen(confAvailablePath)))
 
-	var finalErr error = nil
 	svcConfTmplPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "/templates/service.conf.tmpl")
 	_, err1 := loadConfTemplate(svcConfTmplPath)
-	if err1 != nil {
-		finalErr = err1
-	}
 
 	defaultSvcConfTmplPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "/templates/default.conf.tmpl")
 	_, err2 := loadDefaultConfTemplate(defaultSvcConfTmplPath)
-	if err2 != nil {
-		finalErr = err2
-	}
 
 	acmeChallngeConfTmplPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "/templates/acme-challenge.conf.tmpl")
 	_, err3 := loadAcmeChallengeConfTemplate(acmeChallngeConfTmplPath)
-	if err3 != nil {
-		finalErr = err3
-	}
 
-	logger.Debug("Init completed")
+	logger.Debug("Init completed for 'Nginx Processor'")
 
-	return nrpConfig, finalErr
-}
-
-func loadNrpDefaultsConfig(defaultsMode string) (*NrpConfig, error) {
-	var defaultsContent []byte
-	if defaultsMode == cd.DefaultsDevMode {
-		defaultsContent = cd.NrpConfigDevDefaults
-	} else if defaultsMode == cd.DefaultsProdMode {
-		defaultsContent = cd.NrpConfigProdDefaults
-	}
-
-	logger.Debug(f("Parsing [%s] defaults config", c.WithCyan(defaultsMode)))
-
-	var nrpDefaultsConfig NrpConfig
-	err := yaml.Unmarshal(defaultsContent, &nrpDefaultsConfig)
-	if err != nil {
-		logger.Error("Failed to parse defaults config content:", "err", err.Error())
-		return nil, err
-	}
-	return &nrpDefaultsConfig, nil
-}
-
-func loadNrpConfig(configPath string) (*NrpConfig, error) {
-	file, err := os.Open(configPath)
-	if err != nil {
-		logger.Error("Failed to open config file:", "err", err)
-		return nil, err
-	}
-	defer file.Close()
-
-	var config NrpConfig
-	decoder := yaml.NewDecoder(file)
-	err = decoder.Decode(&config)
-	if err != nil {
-		logger.Error("Failed to parse config file:", "err", err.Error())
-		return nil, err
-	}
-
-	logger.Debug(f("Loaded %s", c.WithCyan("nrp.yaml")))
-	return &config, nil
+	return (err1 == nil && err2 == nil && err3 == nil)
 }
 
 func generateDefaultNginxServerConfig() (*bytes.Buffer, error) {
@@ -133,7 +59,7 @@ func generateDefaultNginxServerConfig() (*bytes.Buffer, error) {
 	return &content, nil
 }
 
-func generateNginxServerConfig(svcConfig *NrpServiceConfig) (*bytes.Buffer, error) {
+func generateNginxServerConfig(svcConfig *config.NrpServiceConfig) (*bytes.Buffer, error) {
 	var content bytes.Buffer
 	err := confTemplate.Execute(&content, svcConfig)
 	if err != nil {
@@ -144,7 +70,7 @@ func generateNginxServerConfig(svcConfig *NrpServiceConfig) (*bytes.Buffer, erro
 	return &content, nil
 }
 
-func generateAcmeChallengeServerConfig(svcConfig *NrpServiceConfig) (*bytes.Buffer, error) {
+func generateAcmeChallengeServerConfig(svcConfig *config.NrpServiceConfig) (*bytes.Buffer, error) {
 	var content bytes.Buffer
 	err := acmeChallengeTemplate.Execute(&content, svcConfig)
 	if err != nil {
@@ -159,21 +85,25 @@ func generateAcmeChallengeServerConfig(svcConfig *NrpServiceConfig) (*bytes.Buff
 	return &content, nil
 }
 
-func CreateDeafultConfFile() {
+func CreateDefaultConfFile(nrpConfig *config.NrpConfig) bool {
+	logger.Info(f("Generating nginx configs in '%s'", c.WithCyan("conf.available")))
 	// Generate default "welcome page" nginx server config
 	content, err := generateDefaultNginxServerConfig()
 	if err != nil {
-		return
+		return false
 	}
 	filePath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.available", f("%v-%s.conf", 0, "default"))
 	if err := os.WriteFile(filePath, content.Bytes(), 0644); err != nil {
 		logger.Error(f("Saving content to file: %s", c.WithCyan(filePath)))
+		return false
 	} else {
 		logger.Info(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(filePath)))
 	}
+
+	return true
 }
 
-func CreateServiceConfFile(idx int, svcConfig *NrpServiceConfig) bool {
+func CreateServiceConfFile(nrpConfig *config.NrpConfig, idx int, svcConfig *config.NrpServiceConfig) bool {
 	// Continue to generate nginx  server config
 	content, err := generateNginxServerConfig(svcConfig)
 	if err != nil {
@@ -185,13 +115,13 @@ func CreateServiceConfFile(idx int, svcConfig *NrpServiceConfig) bool {
 		logger.Error(f("Saving content to file: %s", c.WithCyan(filePath)))
 		return false
 	} else {
-		logger.Info(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(filePath)))
+		logger.Debug(f("Saved (%s) bytes to file: %s", c.WithCyan(f("%v", content.Len())), c.WithGreen(filePath)))
 		return true
 	}
 
 }
 
-func createAcmeChallengeServerConfigFile(svcConfig *NrpServiceConfig) bool {
+func createAcmeChallengeServerConfigFile(nrpConfig *config.NrpConfig, svcConfig *config.NrpServiceConfig) bool {
 	content, err := generateAcmeChallengeServerConfig(svcConfig)
 	if err != nil {
 		return false
@@ -207,7 +137,7 @@ func createAcmeChallengeServerConfigFile(svcConfig *NrpServiceConfig) bool {
 	}
 }
 
-func removeAcmeChallengeServerConfigFile(svcConfig *NrpServiceConfig) bool {
+func removeAcmeChallengeServerConfigFile(nrpConfig *config.NrpConfig, svcConfig *config.NrpServiceConfig) bool {
 	filePath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.d", f("%s-acme-challenge.conf", svcConfig.Name))
 
 	_, err := os.Stat(filePath)
@@ -231,10 +161,10 @@ func removeAcmeChallengeServerConfigFile(svcConfig *NrpServiceConfig) bool {
 Assume *.conf files already in conf.available.
 Now they will be copied to conf.d for nginx to use them
 */
-func CopyConfFiles() bool {
+func CopyConfFiles(nrpConfig *config.NrpConfig) bool {
 	logger.Debug(f("Copying service conf files to folder: %s", c.WithCyan("conf.d")))
 
-	if ok := cleanNginxConfDPath(); !ok {
+	if ok := cleanNginxConfDPath(nrpConfig); !ok {
 		return false
 	}
 

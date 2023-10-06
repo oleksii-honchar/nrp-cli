@@ -1,4 +1,4 @@
-package configProcessor
+package config
 
 type NrpServiceConfig struct {
 	SchemaVersion string `yaml:"schemaVersion"`
@@ -45,14 +45,18 @@ type NrpDnsmasqConfig struct {
 type NrpSupervisorConfig struct {
 	ConfigPath string `yaml:"configPath"`
 }
+type NrpCronConfig struct {
+	ConfigPath string `yaml:"configPath"`
+}
 
 type NrpConfig struct {
+	Supervisor  NrpSupervisorConfig `yaml:"supervisor"`
 	Nginx       NrpNginxConfig      `yaml:"nginx"`
-	Letsencrypt LetsencryptConfig   `yaml:"letsencrypt"`
-	Services    []NrpServiceConfig  `yaml:"services"`
 	Squid       NrpSquidConfig      `yaml:"squid"`
 	Dnsmasq     NrpDnsmasqConfig    `yaml:"dnsmasq"`
-	Supervisor  NrpSupervisorConfig `yaml:"supervisor"`
+	Letsencrypt LetsencryptConfig   `yaml:"letsencrypt"`
+	Cron        NrpCronConfig       `yaml:"cron"`
+	Services    []NrpServiceConfig  `yaml:"services"`
 }
 
 type NewCertRequest struct {

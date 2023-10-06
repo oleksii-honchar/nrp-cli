@@ -1,8 +1,9 @@
-package configProcessor
+package nginxConfigProcessor
 
 import (
 	"bytes"
 	cmdArgs "cmd-args"
+	"config"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,7 +15,7 @@ import (
 	c "github.com/oleksii-honchar/coteco"
 )
 
-func CheckCertificateFiles(configName string) bool {
+func CheckCertificateFiles(nrpConfig *config.NrpConfig, configName string) bool {
 	configFilesFolder := filepath.Join(nrpConfig.Letsencrypt.CertFilesPath, configName)
 	sslCertPath := filepath.Join(configFilesFolder, "cert.pem")
 	sslKeyPath := filepath.Join(configFilesFolder, "privkey.pem")
@@ -30,9 +31,9 @@ func CheckCertificateFiles(configName string) bool {
 	return false
 }
 
-func requestCertificate(svcConfig *NrpServiceConfig) (bool, error) {
+func requestCertificate(nrpConfig *config.NrpConfig, svcConfig *config.NrpServiceConfig) (bool, error) {
 	var res bool
-	var data = NewCertRequest{
+	var data = config.NewCertRequest{
 		DryRun:   nrpConfig.Letsencrypt.DryRun,
 		BasePath: nrpConfig.Letsencrypt.BasePath,
 		CertName: svcConfig.Name,
@@ -87,16 +88,16 @@ Request certificates using certbot
 - Remove tmp server, stop nginx
 - If success - return true, else -> false
 */
-func CreateCertificateFiles(svcConfig *NrpServiceConfig) bool {
-	defer removeAcmeChallengeServerConfigFile(svcConfig)
+func CreateCertificateFiles(nrpConfig *config.NrpConfig, svcConfig *config.NrpServiceConfig) bool {
+	defer removeAcmeChallengeServerConfigFile(nrpConfig, svcConfig)
 	defer stopNginx(nrpConfig.Nginx.StopCmd)
 
 	logger.Info(f("Creating certificates for: %s", c.WithCyan(svcConfig.Name)))
 
-	if ok := cleanNginxConfDPath(); !ok {
+	if ok := cleanNginxConfDPath(nrpConfig); !ok {
 		return false
 	}
-	if ok := createAcmeChallengeServerConfigFile(svcConfig); !ok {
+	if ok := createAcmeChallengeServerConfigFile(nrpConfig, svcConfig); !ok {
 		return false
 	}
 
@@ -125,9 +126,9 @@ func CreateCertificateFiles(svcConfig *NrpServiceConfig) bool {
 	}
 
 	// let's make certbot to do its job
-	res, _ := requestCertificate(svcConfig)
+	res, _ := requestCertificate(nrpConfig, svcConfig)
 	if res {
-		res = CheckCertificateFiles(svcConfig.Name)
+		res = CheckCertificateFiles(nrpConfig, svcConfig.Name)
 	}
 
 	logger.Info(f("Finished creating the certificates"))

@@ -1,4 +1,4 @@
-module config-processor
+module nginx-config-processor
 
 go 1.21.1
 

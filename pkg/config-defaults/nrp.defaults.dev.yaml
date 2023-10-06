@@ -1,3 +1,5 @@
+supervisor:
+  configPath: "./output/supervisord.conf"
 nginx:
   startCmd: "\
     docker stop nginx-more > /dev/nul; \
@@ -29,9 +31,9 @@ letsencrypt:
 squid:
   use: yes
   useDnsmasq: yes
-  configPath: "./output"
+  configPath: "./output/squid.conf"
   port: 3128
 dnsmasq:
-  configPath: "./output"
-supervisor:
-  configPath: "./output"
+  configPath: "./output/dnsmasq.conf"
+cron:
+  configPath: "./output/crontab"

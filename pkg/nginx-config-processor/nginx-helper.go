@@ -1,6 +1,7 @@
-package configProcessor
+package nginxConfigProcessor
 
 import (
+	"config"
 	"os"
 	"path/filepath"
 
@@ -75,7 +76,7 @@ func stopNginx(cmd string) (bool, error) {
 	return true, nil
 }
 
-func cleanNginxConfDPath() bool {
+func cleanNginxConfDPath(nrpConfig *config.NrpConfig) bool {
 	confDPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "conf.d")
 	if err := os.RemoveAll(confDPath); err != nil {
 		logger.Error(f("Failed to clean folder:", c.WithCyan(confDPath)), "err", err)
