@@ -12,4 +12,6 @@ use (
 	./pkg/squid-config-processor
 	./pkg/strings-helper
 	./pkg/supervisor-config-processor
+	./pkg/public-ip
+	./pkg/public-ip/route53
 )

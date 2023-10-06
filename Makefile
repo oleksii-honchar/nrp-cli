@@ -20,6 +20,9 @@ help:
 run: ## run
 	@go run main.go -log-level=debug -defaults-mode=dev
 
+run-check-and-update: ## run
+	@go run main.go -log-level=debug -defaults-mode=dev -check-and-update-public-ip
+
 latest-version:
 	@echo "latest-version.txt = $(LATEST_VERSION)"
 

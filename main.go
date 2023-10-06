@@ -13,6 +13,7 @@ import (
 	cronCfgProc "cron-config-processor"
 	dnsmasqCfgProc "dnsmasq-config-processor"
 	nginxCfgProcessor "nginx-config-processor"
+	publicIp "public-ip"
 	squidCfgProc "squid-config-processor"
 	supervisorCfgProc "supervisor-config-processor"
 )
@@ -29,6 +30,13 @@ func main() {
 
 	nrpConfig, err := config.Init()
 	if err != nil {
+		return
+	}
+
+	if ok := publicIp.Init(nrpConfig); !ok {
+		return
+	}
+	if cmdArgs.CheckAndUpdatePublicIp {
 		return
 	}
 

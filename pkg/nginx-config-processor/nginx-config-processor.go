@@ -18,7 +18,7 @@ var f = fmt.Sprintf
 var logger *blablo.Logger
 
 func Init(nrpConfig *config.NrpConfig) bool {
-	logger = blablo.NewLogger("cfg-prcsr", cmdArgs.LogLevel)
+	logger = blablo.NewLogger("ngnx-proc", cmdArgs.LogLevel)
 	logger.Debug("Init 'Nginx Processor'")
 
 	logger.Info(f("Found (%s) services configuration", c.WithGreen(fmt.Sprint(len(nrpConfig.Services)))))

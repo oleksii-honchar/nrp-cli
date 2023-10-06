@@ -21,6 +21,7 @@ var ConfigPath string = "./nrp.yaml"
 var LogLevel string = string(blablo.LevelInfo)
 var DefaultsMode string = cd.DefaultsProdMode
 var CertbotWait bool = false
+var CheckAndUpdatePublicIp bool = false
 
 func isValidLogLevel(level string) bool {
 	validLevels := []string{
@@ -38,6 +39,7 @@ func Init() bool {
 	flag.StringVar(&LogLevel, "log-level", LogLevel, "Specify 'log-level' value: info(default)|error|warn|debug")
 	flag.StringVar(&DefaultsMode, "defaults-mode", DefaultsMode, "Specify 'defaults-mode' value : prod(default)|dev. When 'dev' defaults used - nginx cmds has a form of docker cmds. When 'prod' default used - nginx cmds assume nrp-cli executed in conatiner and nginx available directly.")
 	flag.BoolVar(&CertbotWait, "certbot-wait", false, "When making certbot call, wait 5min right before the request to check nginx")
+	flag.BoolVar(&CheckAndUpdatePublicIp, "check-and-update-public-ip", false, "Special cli mode when only public-ip registrant CDK will be executed in order to update public IP and domains A records. Should be used in cron tasks automatically.")
 
 	showVersion1 := flag.Bool("v", false, "Show current version")
 	showVersion2 := flag.Bool("version", false, "Show current version")
@@ -67,6 +69,7 @@ func Init() bool {
 	logger.Debug(c.WithGray247(f("cmd arg 'log-level' = %s", LogLevel)))
 	logger.Debug(c.WithGray247(f("cmd arg 'defaults-mode' = %s", DefaultsMode)))
 	logger.Debug(c.WithGray247(f("cmd arg 'certbot-wait' = %v", CertbotWait)))
+	logger.Debug(c.WithGray247(f("cmd arg 'check-and-update-public-ip' = %v", CheckAndUpdatePublicIp)))
 
 	return true
 }
