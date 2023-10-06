@@ -25,8 +25,14 @@ func main() {
 		return
 	}
 
+	var mode string = ""
+	if cmdArgs.CheckAndUpdatePublicIp {
+		mode = c.WithGray247("(public IP check mode)")
+	}
+
 	logger := blablo.NewLogger("main", cmdArgs.LogLevel)
-	logger.Info(c.WithGreenCyan49(f("'Nginx Reverse Proxy' cli tool %s", c.WithCyan(lv.LatestVersion))))
+
+	logger.Info(c.WithGreenCyan49(f("'Nginx Reverse Proxy' cli tool %s %s", c.WithCyan(lv.LatestVersion), mode)))
 
 	nrpConfig, err := config.Init()
 	if err != nil {
@@ -37,6 +43,7 @@ func main() {
 		return
 	}
 	if cmdArgs.CheckAndUpdatePublicIp {
+		logger.Info(c.WithGreenCyan49("Done ✨"))
 		return
 	}
 

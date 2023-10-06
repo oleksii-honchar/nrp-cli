@@ -52,6 +52,8 @@ type NrpCronConfig struct {
 type NrpPublicIpConfig struct {
 	CheckAndUpdate string `yaml:"checkAndUpdate"`
 	Schedule       string `yaml:"schedule"`
+	DataPath       string `yaml:"dataPath"`
+	DryRun         string `yaml:"dryRun"`
 }
 
 type NrpConfig struct {

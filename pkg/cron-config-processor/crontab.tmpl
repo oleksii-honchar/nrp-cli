@@ -1,7 +1,7 @@
 {{ if eq .CheckAndUpdate "yes" }}
 # NRP Public IP check and update
 {{.CronSchedule}} echo "cron       | Scheduled execution {{.Schedule}}" > /proc/1/fd/1 2>/proc/1/fd/2
-{{.CronSchedule}} /usr/local/bin/prefix-log {{.Task}}
+{{.CronSchedule}} /usr/local/bin/prefix-log-nrp {{.Task}} > /proc/1/fd/1 2>/proc/1/fd/2
 {{end}}
 
 # Certbot: every 1d

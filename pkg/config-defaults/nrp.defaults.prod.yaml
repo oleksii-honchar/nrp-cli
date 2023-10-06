@@ -1,3 +1,5 @@
+public-ip:
+  dataPath: "/etc/nrp/public-ip.yaml"
 supervisor:
   configPath: "/etc/supervisor/supervisord.conf"
 nginx:
