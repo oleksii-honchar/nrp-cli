@@ -1,7 +1,9 @@
-# every 1min
-# * * * * * echo "cron | Scheduled execution 1m" > /proc/1/fd/1 2>/proc/1/fd/2
-# * * * * * /usr/local/bin/prefix-log-certbot certbot -v --max-log-backups 10 renew --post-hook "nginx -s reload" > /proc/1/fd/1 2>/proc/1/fd/2
 
-# every 1d
+# NRP Public IP check and update
+* * * * * echo "cron       | Scheduled execution 1min" > /proc/1/fd/1 2>/proc/1/fd/2
+* * * * * /usr/local/bin/prefix-log-nrp /usr/local/bin/nrp-cli -config=/etc/nrp.yaml -log-level=info -check-and-update-public-ip > /proc/1/fd/1 2>/proc/1/fd/2
+
+
+# Certbot: every 1d
 0 0 * * * echo "cron       | Scheduled execution 1d" > /proc/1/fd/1 2>/proc/1/fd/2
 0 0 * * * /usr/local/bin/prefix-log-certbot certbot -v --max-log-backups 10 renew --post-hook "nginx -s reload" > /proc/1/fd/1 2>/proc/1/fd/2

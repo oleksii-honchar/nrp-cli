@@ -1,14 +1,15 @@
 package config
 
 type NrpServiceConfig struct {
-	SchemaVersion string `yaml:"schemaVersion"`
-	Name          string `yaml:"name"`
-	ServiceIP     string `yaml:"serviceIp"`
-	ServicePort   int    `yaml:"servicePort"`
-	DomainName    string `yaml:"domainName"`
-	CORS          string `yaml:"cors"`
-	BlockExploits string `yaml:"blockExploits"`
-	HTTPS         struct {
+	SchemaVersion    string `yaml:"schemaVersion"`
+	Name             string `yaml:"name"`
+	ServiceIP        string `yaml:"serviceIp"`
+	ServicePort      int    `yaml:"servicePort"`
+	DomainName       string `yaml:"domainName"`
+	DomainRegistrant string `yaml:"domainRegistrant,omitempty"`
+	CORS             string `yaml:"cors"`
+	BlockExploits    string `yaml:"blockExploits"`
+	HTTPS            struct {
 		Use   string `yaml:"use"`
 		Force string `yaml:"force"`
 		HSTS  string `yaml:"hsts"`
@@ -48,8 +49,15 @@ type NrpSupervisorConfig struct {
 type NrpCronConfig struct {
 	ConfigPath string `yaml:"configPath"`
 }
+type NrpPublicIpConfig struct {
+	CheckAndUpdate string `yaml:"checkAndUpdate"`
+	Schedule       string `yaml:"schedule"`
+	DataPath       string `yaml:"dataPath"`
+	DryRun         string `yaml:"dryRun"`
+}
 
 type NrpConfig struct {
+	PublicIp    NrpPublicIpConfig   `yaml:"public-ip"`
 	Supervisor  NrpSupervisorConfig `yaml:"supervisor"`
 	Nginx       NrpNginxConfig      `yaml:"nginx"`
 	Squid       NrpSquidConfig      `yaml:"squid"`

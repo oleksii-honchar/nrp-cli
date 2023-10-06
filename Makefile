@@ -10,6 +10,9 @@ CLEAR=\033[2J
 
 LATEST_VERSION := $(shell cat ./pkg/latest-version/latest-version.txt)
 
+include project.env
+export $(shell sed 's/=.*//' project.env)
+
 .PHONY: help
 
 help:
@@ -17,13 +20,19 @@ help:
 	@echo
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+check-project-env-vars:
+	@bash ./.devops/local/scripts/check-project-env-vars.sh
+
 run: ## run
 	@go run main.go -log-level=debug -defaults-mode=dev
+
+run-check-and-update: check-project-env-vars ## run public-ip check and update
+	@go run main.go -log-level=debug -defaults-mode=dev -check-and-update-public-ip -force
 
 latest-version:
 	@echo "latest-version.txt = $(LATEST_VERSION)"
 
-build-n-compress-all: build-all
+build-n-compress-all: build-all # build and compress all
 	tar -czf nrp-cli-darwin-$(LATEST_VERSION).tar.gz nrp-cli-darwin
 	tar -czf nrp-cli-linux-$(LATEST_VERSION).tar.gz nrp-cli-linux
 

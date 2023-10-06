@@ -1,3 +1,5 @@
+public-ip:
+  dataPath: "./output/public-ip.yaml"
 supervisor:
   configPath: "./output/supervisord.conf"
 nginx:

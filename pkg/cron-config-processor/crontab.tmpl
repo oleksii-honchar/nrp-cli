@@ -1,7 +1,9 @@
-# every 1min
-# * * * * * echo "cron | Scheduled execution 1m" > /proc/1/fd/1 2>/proc/1/fd/2
-# * * * * * /usr/local/bin/prefix-log-certbot certbot -v --max-log-backups 10 renew --post-hook "nginx -s reload" > /proc/1/fd/1 2>/proc/1/fd/2
+{{ if eq .CheckAndUpdate "yes" }}
+# NRP Public IP check and update
+{{.CronSchedule}} echo "cron       | Scheduled execution {{.Schedule}}" > /proc/1/fd/1 2>/proc/1/fd/2
+{{.CronSchedule}} /usr/local/bin/prefix-log-nrp {{.Task}} > /proc/1/fd/1 2>/proc/1/fd/2
+{{end}}
 
-# every 1d
+# Certbot: every 1d
 0 0 * * * echo "cron       | Scheduled execution 1d" > /proc/1/fd/1 2>/proc/1/fd/2
 0 0 * * * /usr/local/bin/prefix-log-certbot certbot -v --max-log-backups 10 renew --post-hook "nginx -s reload" > /proc/1/fd/1 2>/proc/1/fd/2
