@@ -27,7 +27,7 @@ build-n-compress-all: build-all
 	tar -czf nrp-cli-darwin-$(LATEST_VERSION).tar.gz nrp-cli-darwin
 	tar -czf nrp-cli-linux-$(LATEST_VERSION).tar.gz nrp-cli-linux
 
-build-all: build-linux build-darwin # build darwin & linux
+build-all: build-linux build-darwin ## build darwin & linux
 
 build-linux: ## build for linux
 	GOOS=linux CGO_ENABLED=0 go build -o nrp-cli-linux .

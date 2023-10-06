@@ -26,3 +26,5 @@ letsencrypt
 nrp-cli-darwin
 nrp-cli-linux
 *.tar.gz
+squid.conf
+dnsmasq.conf

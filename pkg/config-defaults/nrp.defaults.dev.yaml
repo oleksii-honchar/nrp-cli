@@ -1,3 +1,5 @@
+supervisor:
+  configPath: "./output/supervisord.conf"
 nginx:
   startCmd: "\
     docker stop nginx-more > /dev/nul; \
@@ -13,7 +15,7 @@ nginx:
   logsCmd: "docker logs nginx-more"
   configPath: "./nginx-config"
 letsencrypt:
-  dryRun: false
+  dryRun: no
   basePath: "./letsencrypt"
   certFilesPath: "./letsencrypt/live"
   requestCertCmdTmpl: "\
@@ -25,4 +27,13 @@ letsencrypt:
       --config-dir {{.BasePath}} \
       --work-dir {{.BasePath}} \
       --logs-dir {{.BasePath}} \
-      {{if .DryRun}}--dry-run{{end}}"
+      {{if eq .DryRun \"yes\"}}--dry-run{{end}}"
+squid:
+  use: yes
+  useDnsmasq: yes
+  configPath: "./output/squid.conf"
+  port: 3128
+dnsmasq:
+  configPath: "./output/dnsmasq.conf"
+cron:
+  configPath: "./output/crontab"

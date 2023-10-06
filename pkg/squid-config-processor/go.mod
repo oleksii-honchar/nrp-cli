@@ -1,4 +1,4 @@
-module cmd-args
+module squid-config-processor
 
 go 1.21.1
 

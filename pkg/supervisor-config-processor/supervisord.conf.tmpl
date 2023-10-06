@@ -1,0 +1,44 @@
+[supervisord]
+nodaemon=true
+loglevel=info
+logfile_maxbytes=0
+user=root
+
+{{if eq .Squid.Use "yes"}}
+[program:squid]
+# squid -NYCd 1 : -N - stay in foreground, -Y - debug mode, -C - use config, -d 1 - lowest debug level
+command=/usr/local/bin/prefix-log /usr/sbin/squid -NYCd 1
+autostart=true
+autorestart=true
+stdout_events_enabled=true
+stderr_events_enabled=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+stopsignal=QUIT
+{{end}}
+{{if eq .Squid.UseDnsmasq "yes"}}
+[program:dnsmasq]
+command=/usr/local/bin/prefix-log /usr/sbin/dnsmasq -k
+autostart=true
+autorestart=true
+stdout_events_enabled=true
+stderr_events_enabled=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+stopsignal=QUIT
+{{end}}
+[program:nginx]
+command=/usr/local/bin/prefix-log-nginx /usr/sbin/nginx
+autostart=true
+autorestart=true
+stdout_events_enabled=true
+stderr_events_enabled=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+stopsignal=QUIT

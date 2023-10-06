@@ -1,4 +1,4 @@
-package configProcessor
+package nginxConfigProcessor
 
 import (
 	"fmt"
