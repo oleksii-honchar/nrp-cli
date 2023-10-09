@@ -3,9 +3,9 @@ map $http_host $corsdomains {
 
   default "false";
 
-  # Your allowed domain goes here
-  #.your-domain.tld "true";
-  #.other-domain.tld "true";
+{{range .}}
+  {{.}} "true";
+{{end}}
 }
 
 map $request_method $corsmethods {

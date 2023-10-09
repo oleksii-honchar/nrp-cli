@@ -68,16 +68,18 @@ func GenerateConfig(nrpConfig *config.NrpConfig) bool {
 
 func generateCronSchedule(schedule string) string {
 	switch schedule {
-	case "1d":
-		return "0 0 * * *"
-	case "1w":
-		return "0 0 * * 0"
 	case "1m":
 		return "0 0 1 * *"
+	case "1w":
+		return "0 0 * * 0"
+	case "1d":
+		return "0 0 * * *"
+	case "1h":
+		return "0 */1 * * *"
 	case "1min":
 		return "* * * * *"
 	default:
-		logger.Warn(f("Unknown cron schedule: %s. Using default: '1min'", c.WithRed(schedule)))
+		logger.Warn(f("Unknown cron schedule: %s. Using default: '1h'", c.WithRed(schedule)))
 		return "* * * * *"
 	}
 }

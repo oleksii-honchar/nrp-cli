@@ -34,18 +34,29 @@ func Init(nrpConfig *config.NrpConfig) bool {
 	}
 	logger.Debug(f("Folder cleaned: %s", c.WithGreen(confAvailablePath)))
 
-	svcConfTmplPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "/templates/service.conf.tmpl")
-	_, err1 := loadConfTemplate(svcConfTmplPath)
+	_, err1 := loadTemplateToVar(
+		filepath.Join(nrpConfig.Nginx.ConfigPath, "/templates/service.conf.tmpl"),
+		&confTemplate,
+	)
 
-	defaultSvcConfTmplPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "/templates/default.conf.tmpl")
-	_, err2 := loadDefaultConfTemplate(defaultSvcConfTmplPath)
+	_, err2 := loadTemplateToVar(
+		filepath.Join(nrpConfig.Nginx.ConfigPath, "/templates/default.conf.tmpl"),
+		&defaultConfTemplate,
+	)
 
-	acmeChallngeConfTmplPath := filepath.Join(nrpConfig.Nginx.ConfigPath, "/templates/acme-challenge.conf.tmpl")
-	_, err3 := loadAcmeChallengeConfTemplate(acmeChallngeConfTmplPath)
+	_, err3 := loadTemplateToVar(
+		filepath.Join(nrpConfig.Nginx.ConfigPath, "/templates/acme-challenge.conf.tmpl"),
+		&acmeChallengeTemplate,
+	)
+
+	_, err4 := loadTemplateToVar(
+		filepath.Join(nrpConfig.Nginx.ConfigPath, "/templates/cors-servers.conf.tmpl"),
+		&corsServersTemplate,
+	)
 
 	logger.Debug("Init completed for 'Nginx Processor'")
 
-	return (err1 == nil && err2 == nil && err3 == nil)
+	return (err1 == nil && err2 == nil && err3 == nil && err4 == nil)
 }
 
 func generateDefaultNginxServerConfig() (*bytes.Buffer, error) {

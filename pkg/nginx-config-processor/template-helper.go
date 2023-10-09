@@ -7,10 +7,10 @@ import (
 	"text/template"
 )
 
-// var f = fmt.Sprintf
 var confTemplate *template.Template
 var defaultConfTemplate *template.Template
 var acmeChallengeTemplate *template.Template
+var corsServersTemplate *template.Template
 
 func loadTemplate(filePath string) (*template.Template, error) {
 	content, err := os.ReadFile(filePath)
@@ -30,20 +30,8 @@ func loadTemplate(filePath string) (*template.Template, error) {
 	return tmpl, nil
 }
 
-func loadConfTemplate(filePath string) (bool, error) {
+func loadTemplateToVar(filePath string, destVar **template.Template) (bool, error) {
 	var err error
-	confTemplate, err = loadTemplate(filePath)
-	return err == nil, err
-}
-
-func loadDefaultConfTemplate(filePath string) (bool, error) {
-	var err error
-	defaultConfTemplate, err = loadTemplate(filePath)
-	return err == nil, err
-}
-
-func loadAcmeChallengeConfTemplate(filePath string) (bool, error) {
-	var err error
-	acmeChallengeTemplate, err = loadTemplate(filePath)
+	*destVar, err = loadTemplate(filePath)
 	return err == nil, err
 }

@@ -2,7 +2,8 @@
 
 * [Basic usage](#basic-usage)
   * [Adding new service](#adding-new-service)
-* [Comand-line options](#command-line-options)
+* [Configuration schema](#configuration-schema)
+* [Command-line options](#command-line-options)
 * [How to deploy manually](#how-to-deploy-manually)
 * [Solution Design](#solution-design)
 * [Troubleshooting](#troubleshooting)
@@ -61,7 +62,7 @@ Just add new array item in `nrp.yaml`:
 
 * Keep `name` unique
 * `domainName` should contain only single domain, multiple domains not tested
-* rest of the options will add related nginx includes to the service config
+* rest of the options will controls adding misc nginx includes to the service config
 * if you don't need HTTPS omit `https` section
 
   ```yaml
@@ -79,7 +80,7 @@ Just add new array item in `nrp.yaml`:
   
 ## Configuration schema
 
-Most of the technical config predefined and hidden in "./pkg/config-defaults/nrp.defaults.*.yaml". Then it "right joined" to user config. So the user only need to define services to proxy to in most of the cases.
+Most of the technical config predefined and hidden in "./pkg/config-defaults/nrp.defaults.*.yaml". Then it "right joined" to user config. So the user only need to define services to proxy to, in most of the cases.
 
 Semantically bool flags, intentionally made with "yes|no" string values. Since it allows to merge properly user-defined and default values.
 
@@ -96,7 +97,7 @@ The `nrp.yaml` schema has following sections worth noting:
 * `public-ip` - this section controls automatic update of your current public IP in `A` record of binded domains using `services[].domainRegistrant` value. That being said that in future releases it is possible to have domains with different registrants. This feature supposed to be used only if you don't have static public IP. Currently supported registrants are (by 6.10.23):
   * AWS Route 53
 * `public-ip.scheduleCheckAndUpdate` - [yes | no] - should be set explicitly. When set to "yes" will schedule `cron` task to check and update (using registrant CDK) current public IP for corresponding domains.
-* `public-ip.schedule` - [1min(default) | 1h | 1d] - should be set explicitly. Used when `public-ip.scheduleCheckAndUpdate` is set to "yes".
+* `public-ip.schedule` - [1min | 1h(default) | 1d | 1w | 1m] - should be set explicitly. Used when `public-ip.scheduleCheckAndUpdate` is set to "yes".
 
 ## Command-line options
 

@@ -55,8 +55,14 @@ func main() {
 		return
 	}
 
+	var corsEnabledDomains = []string{}
+
 	// Process array of services
 	for idx, svcCfg := range nrpConfig.Services {
+		if svcCfg.CORS == "yes" {
+			corsEnabledDomains = append(corsEnabledDomains, svcCfg.DomainName)
+		}
+
 		transportMode := c.WithGray247("[HTTP]")
 		if svcCfg.HTTPS.Use == "yes" {
 			transportMode = c.WithOrange("[HTTPS]")
@@ -86,6 +92,15 @@ func main() {
 
 	nginxCfgProcessor.CopyConfFiles(nrpConfig)
 	logger.Info(c.WithGreen(f("Config generation completed for %s", c.WithCyan("'nginx'"))))
+
+	if cmdArgs.CheckAndUpdatePublicIp {
+		logger.Info(c.WithGreenCyan49("Done ✨"))
+		return
+	}
+
+	if len(corsEnabledDomains) > 0 {
+		_ = nginxCfgProcessor.CreateCorsServersConfFile(nrpConfig, corsEnabledDomains)
+	}
 
 	_ = squidCfgProc.GenerateConfig(nrpConfig)
 	_ = dnsmasqCfgProc.GenerateConfig(nrpConfig)
