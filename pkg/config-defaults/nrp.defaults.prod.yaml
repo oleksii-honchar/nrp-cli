@@ -28,6 +28,7 @@ squid:
   configPath: "/etc/squid/squid.conf"
   port: 3128
 dnsmasq:
+  logs: no
   configPath: "/etc/dnsmasq.conf"
 cron:
   configPath: "/etc/crontabs/root"

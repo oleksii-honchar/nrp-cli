@@ -10,7 +10,9 @@ server=8.8.8.8
 
 dhcp-option=252,"http://127.0.0.1:{{.SquidPort}}/wpad.dat"
 
+{{ if eq .Logs "yes" }}
 log-queries=quiet
+{{ end }}
 log-facility=-
 
 {{range .Domains}}

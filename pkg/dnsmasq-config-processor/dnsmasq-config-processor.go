@@ -52,9 +52,11 @@ func GenerateConfig(config *config.NrpConfig) bool {
 	var tmplConfig = struct {
 		SquidPort int
 		Domains   []string
+		Logs      string
 	}{
 		SquidPort: config.Squid.Port,
 		Domains:   getUniqueDomains(config),
+		Logs:      config.Dnsmasq.Logs,
 	}
 
 	var content bytes.Buffer

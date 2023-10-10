@@ -18,6 +18,7 @@ stderr_logfile=/dev/stderr
 stderr_logfile_maxbytes=0
 stopsignal=QUIT
 {{end}}
+
 {{if eq .Squid.UseDnsmasq "yes"}}
 [program:dnsmasq]
 command=/usr/local/bin/prefix-log /usr/sbin/dnsmasq -k
@@ -31,6 +32,7 @@ stderr_logfile=/dev/stderr
 stderr_logfile_maxbytes=0
 stopsignal=QUIT
 {{end}}
+
 [program:nginx]
 command=/usr/local/bin/prefix-log-nginx /usr/sbin/nginx
 autostart=true

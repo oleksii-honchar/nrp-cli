@@ -89,6 +89,7 @@ The `nrp.yaml` schema has following sections worth noting:
 * `letsencrypt.dryRun` - [yes | no(default)] - make `certbot` use `--dry-run` option when set to "yes". Usefull for testing network setup if something goes wrong during certificates requests.
 * `squid.use` - [yes(default) | no] - adding `squid` configs to create proxy on `squid.port` to be used by local network devices to access NRP services. Usefull when there is no ISP NAT-loopback available. Generally if one will not setup local network devices to use `squid` as proxy it will do nothing. Can be turned off by "no" value.
 * `squid.useDnsmasq` - [yes(default) | no] - adding `dnsmasq` configs to be internal DNS service to resolve services domain names locally for `squid`.
+* `dnsmasq.logs` - [yes | no(default)] - when set to "yes" enables dnsmasq logs.
 * `services[].cors`- [yes | no] - should be set explicitly. When set to "yes", will include `cors` configuration to `nginx` server config. Check [nginx-config/templates/cors-servers.conf.tmpl](nginx-config/templates/cors-servers.conf.tmpl) for more details.
 * `services[].domainRegistrant`- [route53] - should be set explicitly. Used in conjunction with `public-ip.scheduleCheckAndUpdate` section. Defines which CDK to use to update domain `A` record to point to your dynamic public IP.
 * `services[].https.use`- [yes | no] - should be set explicitly. When set to "yes", will include HTTPS related templates to `nginx` server config. Check [./nginx-config/templates/service.conf.tmpl](nginx-config/templates/service.conf.tmpl) for more details.
@@ -123,8 +124,15 @@ The `nrp.yaml` schema has following sections worth noting:
 Here is the nginx configuration decomposition in chunks from which then every service config composed:
 ![nginx-config-structure](./docs/nrp-nginx-config-structure.jpg)
 
-Here is the flow diagram for main logic:
+Here is the nginx config generation flow diagram for main logic:
 ![nrp-flow-diagram](./docs/nrp-flow-diagram.jpg)
+
+Rest of the configs generation pretty straightforward and can be found in the following templates:
+
+* [crontab.tmpl](pkg/cron-config-processor/crontab.tmpl)
+* [dnsmasq.conf.tmpl](pkg/dnsmasq-config-processor/dnsmasq.conf.tmpl)
+* [squid.conf.tmpl](pkg/squid-config-processor/squid.conf.tmpl)
+* [supervisord.conf.tmpl](pkg/supervisor-config-processor/supervisord.conf.tmpl)
 
 ## Troubleshooting
 

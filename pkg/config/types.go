@@ -41,6 +41,7 @@ type NrpSquidConfig struct {
 }
 
 type NrpDnsmasqConfig struct {
+	Logs       string `yaml:"logs"`
 	ConfigPath string `yaml:"configPath"`
 }
 type NrpSupervisorConfig struct {

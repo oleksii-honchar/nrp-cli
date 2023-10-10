@@ -77,7 +77,7 @@ func generateNginxServerConfig(svcConfig *config.NrpServiceConfig) (*bytes.Buffe
 		logger.Error(f("Failed to generate nginx config for service: %s", c.WithCyan(svcConfig.Name)), "err", err)
 		return nil, err
 	}
-	// logger.Debug(f("Generated (%s) bytes of config data", c.WithGreen(fmt.Sprint(content.Len()))))
+	logger.Debug(f("Generated (%s) bytes of config data for service: %s%+v%s", c.WithGreen(fmt.Sprint(content.Len())), c.Yellow, svcConfig, c.Reset))
 	return &content, nil
 }
 
