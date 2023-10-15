@@ -9,9 +9,9 @@
 * [Solution Design](#solution-design)
 * [Troubleshooting](#troubleshooting)
 
-[Nginx-Reverse-Proxy](https://github.com/oleksii-honchar/nginx-reverse-proxy) cli tool for creating `nginx` proxy-path configs with simple yaml configuration and HTTPS support. 
+[Nginx-Reverse-Proxy](https://github.com/oleksii-honchar/nginx-reverse-proxy) cli tool for creating `nginx` proxy-path configs with simple `yaml` configuration and HTTPS support. Build with `Go`
 
-It is a part of a [Nginx-Reverse-Proxy](https://github.com/oleksii-honchar/nginx-reverse-proxy) project which is an alternative to [Nginx-Proxy-Manager](https://nginxproxymanager.com/).
+It is a part of a [Nginx-Reverse-Proxy](https://github.com/oleksii-honchar/nginx-reverse-proxy) project, which is an alternative to [Nginx-Proxy-Manager](https://nginxproxymanager.com/).
 
 This tool do the following:
 
