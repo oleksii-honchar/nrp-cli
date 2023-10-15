@@ -90,11 +90,13 @@ The `nrp.yaml` schema has following sections worth noting:
 * `squid.use` - [yes(default) | no] - adding `squid` configs to create proxy on `squid.port` to be used by local network devices to access NRP services. Usefull when there is no ISP NAT-loopback available. Generally if one will not setup local network devices to use `squid` as proxy it will do nothing. Can be turned off by "no" value.
 * `squid.useDnsmasq` - [yes(default) | no] - adding `dnsmasq` configs to be internal DNS service to resolve services domain names locally for `squid`.
 * `dnsmasq.logs` - [yes | no(default)] - when set to "yes" enables dnsmasq logs.
-* `services[].cors`- [yes | no] - should be set explicitly. When set to "yes", will include `cors` configuration to `nginx` server config. Check [nginx-config/templates/cors-servers.conf.tmpl](nginx-config/templates/cors-servers.conf.tmpl) for more details.
+* `services[].use`- [yes(default) | no] - when set to "no", service config will be ingored. Useful to keep service config while fixing/updating something. If config key not present - is considered = "yes".
+* `services[].blockExploits`- [yes(default) | no] - adds additional protection to nginx `server` section config (check [block-exploits.conf](nginx-config/includes/block-exploits.conf)).
+* `services[].cors`- [yes(default) | no] - when set to "yes", will include `cors` configuration to `nginx` server config. Check [nginx-config/templates/cors-servers.conf.tmpl](nginx-config/templates/cors-servers.conf.tmpl) for more details.
 * `services[].domainRegistrant`- [route53] - should be set explicitly. Used in conjunction with `public-ip.scheduleCheckAndUpdate` section. Defines which CDK to use to update domain `A` record to point to your dynamic public IP.
-* `services[].https.use`- [yes | no] - should be set explicitly. When set to "yes", will include HTTPS related templates to `nginx` server config. Check [./nginx-config/templates/service.conf.tmpl](nginx-config/templates/service.conf.tmpl) for more details.
-* `services[].https.force`- [yes | no] - should be set explicitly. Forcing upgrade to HTTPS when HTTP request made.
-* `services[].https.hsts`- [yes | no] - should be set explicitly. Check [wikipedia](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) for more details.
+* `services[].https.use`- [yes(default) | no] - when set to "yes", will include HTTPS related templates to `nginx` server config. Check [./nginx-config/templates/service.conf.tmpl](nginx-config/templates/service.conf.tmpl) for more details.
+* `services[].https.force`- [yes(default) | no] - forcing upgrade to HTTPS when HTTP request made.
+* `services[].https.hsts`- [yes(default) | no] - check [wikipedia](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) for more details.
 * `public-ip` - this section controls automatic update of your current public IP in `A` record of binded domains using `services[].domainRegistrant` value. That being said that in future releases it is possible to have domains with different registrants. This feature supposed to be used only if you don't have static public IP. Currently supported registrants are (by 6.10.23):
   * AWS Route 53
 * `public-ip.scheduleCheckAndUpdate` - [yes | no] - should be set explicitly. When set to "yes" will schedule `cron` task to check and update (using registrant CDK) current public IP for corresponding domains.

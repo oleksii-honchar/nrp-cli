@@ -30,4 +30,3 @@ squid.conf
 dnsmasq.conf
 nginx-config/cors-servers.conf
 output/supervisord.conf
-output/supervisord.conf

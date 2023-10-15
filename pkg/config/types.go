@@ -1,8 +1,8 @@
 package config
 
 type NrpServiceConfig struct {
-	SchemaVersion    string `yaml:"schemaVersion"`
 	Name             string `yaml:"name"`
+	Use              string `yaml:"use"`
 	ServiceIP        string `yaml:"serviceIp"`
 	ServicePort      int    `yaml:"servicePort"`
 	DomainName       string `yaml:"domainName"`

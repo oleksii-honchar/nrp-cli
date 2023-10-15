@@ -1,0 +1,7 @@
+use: yes
+cors: yes
+blockExploits: yes
+https:
+  use: yes
+  force: yes
+  hsts: yes

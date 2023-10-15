@@ -10,3 +10,6 @@ var NrpConfigDevDefaults []byte
 
 //go:embed nrp.defaults.prod.yaml
 var NrpConfigProdDefaults []byte
+
+//go:embed nrp-service.defaults.yaml
+var NrpSvcConfigDefaults []byte

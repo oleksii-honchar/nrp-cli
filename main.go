@@ -59,6 +59,11 @@ func main() {
 
 	// Process array of services
 	for idx, svcCfg := range nrpConfig.Services {
+		if svcCfg.Use != "yes" {
+			logger.Info(f("Skipping disabled service: %s", c.WithYellow(svcCfg.Name)))
+			continue
+		}
+
 		if svcCfg.CORS == "yes" {
 			corsEnabledDomains = append(corsEnabledDomains, svcCfg.DomainName)
 		}
