@@ -112,5 +112,10 @@ func main() {
 	_ = supervisorCfgProc.GenerateConfig(nrpConfig)
 	_ = cronCfgProc.GenerateConfig(nrpConfig)
 
+	if cmdArgs.LogLevel == string(blablo.LevelDebug) {
+		// logger.Debug(f("Final NRP config : %s%+v%s", c.Yellow, nrpConfig, c.Reset))
+		logger.Debug("Final NRP config : ", "nrpConfig", nrpConfig)
+	}
+
 	logger.Info(c.WithGreenCyan49("Done ✨"))
 }

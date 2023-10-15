@@ -1,8 +1,10 @@
 package config
 
 import (
+	"bytes"
 	cmdArgs "cmd-args"
 	cd "config-defaults"
+	"regexp"
 
 	"fmt"
 	"os"
@@ -93,15 +95,21 @@ func loadNrpDefaultsConfig(defaultsMode string) (*NrpConfig, error) {
 }
 
 func loadNrpConfig(configPath string) (*NrpConfig, error) {
-	file, err := os.Open(configPath)
+	var contentWithValues []byte
+	content, err := os.ReadFile(configPath)
+
 	if err != nil {
 		logger.Error(f("Failed to open config file: %s", c.WithRed(err.Error())))
 		return nil, err
 	}
-	defer file.Close()
+
+	contentWithValues, err = replaceEnvVarsWithValues(content)
+	if err != nil {
+		return nil, err
+	}
 
 	var config NrpConfig
-	decoder := yaml.NewDecoder(file)
+	decoder := yaml.NewDecoder(bytes.NewReader(contentWithValues))
 	err = decoder.Decode(&config)
 	if err != nil {
 		logger.Error(f("Failed to parse config file: %s", c.WithRed(err.Error())))
@@ -124,4 +132,36 @@ func mergeNrpSvcDefaultsConfig(
 
 	logger.Debug(f("Completed merging default config for (%s) services ", c.WithGreen(fmt.Sprint(len(nrpConfig.Services)))))
 	return nil // kinda weird ...
+}
+
+/*
+Yaml keys values can be set to environment variable name, e.g. $SERVICE_HOST
+So here we take yaml string content and replacing via regex env vars name ina form of "$ENV_VAR" to it's possible value. If no value exists, set "" - empty string
+*/
+func replaceEnvVarsWithValues(content []byte) ([]byte, error) {
+	logger.Debug("Going to replace env vars with their values if any")
+	var hasErrors bool = false
+	re := regexp.MustCompile(`\$(\w+)`)
+
+	// Replace environment variable names with their values
+	result := re.ReplaceAllStringFunc(string(content), func(match string) string {
+		envVar := match[1:] // Remove the leading "$" of the environment variable name
+		value := os.Getenv(envVar)
+		if value == "" {
+			hasErrors = true
+			logger.Error(f(
+				"Can't get value for env var mentioned in config: %s",
+				c.WithRed(envVar),
+			))
+		}
+		return value
+	})
+
+	if !hasErrors {
+		logger.Debug(f(c.WithGreen("Completed env vars values replacement")))
+	} else {
+		logger.Info(f(c.WithRed("Some environment variables values missing, please check your setup")))
+	}
+
+	return []byte(result), nil
 }

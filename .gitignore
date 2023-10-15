@@ -18,7 +18,7 @@ logs/*
 node_modules/
 devops/version/
 tmp
-nrp.yaml
+# nrp.yaml - since we can replace values with env vars
 conf.d
 conf.available
 letsencrypt

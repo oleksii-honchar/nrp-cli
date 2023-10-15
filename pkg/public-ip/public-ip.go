@@ -75,7 +75,10 @@ func Init(nrpConfig *config.NrpConfig) bool {
 		return false
 	}
 
-	logger.Info(c.WithGreen("'Public IP' update executed successfuly"))
+	if nrpConfig.PublicIp.DryRun != "yes" {
+		logger.Info(c.WithGreen("'Public IP' update executed successfuly"))
+	}
+
 	return true
 }
 

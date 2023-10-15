@@ -3,23 +3,39 @@
 * [Basic usage](#basic-usage)
   * [Adding new service](#adding-new-service)
 * [Configuration schema](#configuration-schema)
+  * [User config expanded example](#user-config-expanded-example)
 * [Command-line options](#command-line-options)
 * [How to deploy manually](#how-to-deploy-manually)
 * [Solution Design](#solution-design)
 * [Troubleshooting](#troubleshooting)
 
-[Nginx-Reverse-Proxy](https://github.com/oleksii-honchar/nginx-reverse-proxy) cli tool for creating `nginx` proxy-path configs with simple yaml configuration and HTTPS support.
+[Nginx-Reverse-Proxy](https://github.com/oleksii-honchar/nginx-reverse-proxy) cli tool for creating `nginx` proxy-path configs with simple yaml configuration and HTTPS support. 
+
+It is a part of a [Nginx-Reverse-Proxy](https://github.com/oleksii-honchar/nginx-reverse-proxy) project which is an alternative to [Nginx-Proxy-Manager](https://nginxproxymanager.com/).
+
+This tool do the following:
+
+* Optionally updates Route53 domain to match current public IP
+* Substitues `nrp.yaml` env vars with values
+* Requests SSL certificates via certbot
+* Based on `nrp.yaml` config it composes following configs:
+  * nginx
+  * dnsmasq
+  * squid
+  * cron
+  * supervisor
+
+It should be used as a part of [Nginx-Reverse-Proxy](https://github.com/oleksii-honchar/nginx-reverse-proxy) docker image in `entypoint.sh`. After config preparation nginx will be started.
 
 ## Basic usage
 
-* Create empty `nrp.yaml` file and run `make run-all`. Go to `localhost` in browser. You should see `nginx-more` default page.
+* Create empty `nrp.yaml` file and run `make run-all`. Go to `localhost` in browser. You should see NRP default page.
 
 * Assume your services executed on the same host as nginx, and host has local IP = `192.168.0.12`. Also you had configured `service1.domain.tld` & `service1.domain.tld` redirect to your ISP public IP.
 
 * Create `nrp.yaml` file in root repo folder:
 
   ```yaml
-  schemaVersion: 0.3.0
   letsencrypt:
     email: "you-name@gmail.com"
     dryRun: false
@@ -63,7 +79,6 @@ Just add new array item in `nrp.yaml`:
 * Keep `name` unique
 * `domainName` should contain only single domain, multiple domains not tested
 * rest of the options will controls adding misc nginx includes to the service config
-* if you don't need HTTPS omit `https` section
 
   ```yaml
   - name: service2
@@ -71,13 +86,46 @@ Just add new array item in `nrp.yaml`:
     servicePort: 9100
     domainName: service2.domain.tld
     domainRegistrant: route53 # optional, used only with "public-ip" global config section
-    cors: yes # optional
-    https: #optional, but highly recommended
+  ```
+
+* after merge with defaults, service config will have the following internal data:
+
+  ```yaml
+  - name: service2
+    use: yes
+    serviceIp: 192.168.0.12
+    servicePort: 9100
+    domainName: service2.domain.tld
+    domainRegistrant: route53 
+    cors: yes
+    blockExploits: yes
+    https:
       use: yes
-      force: yes 
+      force: yes
       hsts: yes
   ```
-  
+
+* if you don't need HTTPS, set `https.use: no`
+* so if you don't need those, set them explicitly to "no" in `nrp.yaml`
+* additionaly you can use environment vars from `project.env` and then loaded via `make` command to hide any sensitive info from repo:
+
+  ```yaml
+  - name: service2
+    serviceIp: $SERVICE_IP
+    servicePort: $SERVICE_PORT
+    domainName: $SERVICE_DOMAIN
+    domainRegistrant: route53
+  ```
+
+  ```bash
+  # project.env file
+  SERVICE_IP=192.168.1.22 # local host IP
+  SERVICE_PORT=2344
+  SERVICE_DOMAIN=svc.your.tld
+  ```
+
+**Important Note** : since NRP running in docker and it uses bridged adapter for networking, you can't use 127.0.0.1 IP for local services if they not runing in the same docker compose. Use local host full IP instead.
+
 ## Configuration schema
 
 Most of the technical config predefined and hidden in "./pkg/config-defaults/nrp.defaults.*.yaml". Then it "right joined" to user config. So the user only need to define services to proxy to, in most of the cases.
@@ -101,6 +149,44 @@ The `nrp.yaml` schema has following sections worth noting:
   * AWS Route 53
 * `public-ip.scheduleCheckAndUpdate` - [yes | no] - should be set explicitly. When set to "yes" will schedule `cron` task to check and update (using registrant CDK) current public IP for corresponding domains.
 * `public-ip.schedule` - [1min | 1h(default) | 1d | 1w | 1m] - should be set explicitly. Used when `public-ip.scheduleCheckAndUpdate` is set to "yes".
+
+### User config expanded example
+
+This is an example of possible options.
+
+```yaml
+public-ip:
+  checkAndUpdate: yes
+  schedule: 1h
+  dryRun: yes
+letsencrypt:
+  dryRun: no
+  email: $CERTBOT_CONTACT_EMAIL
+dnsmasq:
+  logs: no
+squid:
+  use: yes
+  useDnsmasq: yes
+  port: 3128
+services:
+- name: fastify1
+  serviceIp: $SVC1_IP
+  servicePort: $SVC1_PORT
+  domainName: $SVC1_DOMAIN
+  domainRegistrant: route53
+- name: fastify2
+  use: no
+  serviceIp: $SVC1_IP
+  servicePort: $SVC1_PORT
+  domainName: $SVC1_DOMAIN
+  domainRegistrant: route53
+  cors: no
+  blockExploits: no
+  https: 
+    use: no
+    force: yes 
+    hsts: yes
+```
 
 ## Command-line options
 

@@ -1,0 +1,26 @@
+public-ip:
+  checkAndUpdate: yes
+  schedule: 1min
+  dryRun: yes
+letsencrypt:
+  dryRun: no
+  email: $CERTBOT_CONTACT_EMAIL
+dnsmasq:
+  logs: no
+services:
+- name: fastify1
+  serviceIp: $SVC1_IP
+  servicePort: $SVC1_PORT
+  domainName: $SVC1_DOMAIN
+  domainRegistrant: route53
+- name: fastify2
+  use: no
+  serviceIp: $SVC1_IP
+  servicePort: $SVC1_PORT
+  domainName: $SVC1_DOMAIN
+  domainRegistrant: route53
+  cors: yes
+  https: 
+    use: yes
+    force: yes 
+    hsts: yes
