@@ -30,7 +30,7 @@ func main() {
 		mode = c.WithGray247("(public IP check mode)")
 	}
 
-	logger := blablo.NewLogger("main", cmdArgs.LogLevel)
+	logger := blablo.NewLogger("main", cmdArgs.LogLevel, false)
 
 	logger.Info(c.WithGreenCyan49(f("'Nginx Reverse Proxy' cli tool %s %s", c.WithCyan(lv.LatestVersion), mode)))
 

@@ -23,7 +23,7 @@ var f = fmt.Sprintf
 var logger *blablo.Logger
 
 func GenerateConfig(nrpConfig *config.NrpConfig) bool {
-	logger = blablo.NewLogger("cron-cfg", string(cmdArgs.LogLevel))
+	logger = blablo.NewLogger("cron-cfg", string(cmdArgs.LogLevel), false)
 	// logger.Debug(f("Processing 'cron' config %s%+v%s", c.Yellow, config.Cron, c.Reset))
 	logger.Debug(f("Processing 'cron' config"))
 

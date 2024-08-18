@@ -23,7 +23,7 @@ func Init(nrpConfig *config.NrpConfig) bool {
 	if !cmdArgs.CheckAndUpdatePublicIp {
 		return true
 	}
-	logger = blablo.NewLogger("public-ip", cmdArgs.LogLevel)
+	logger = blablo.NewLogger("public-ip", cmdArgs.LogLevel, false)
 	logger.Debug("Init 'Public IP' tools")
 	if nrpConfig.PublicIp.CheckAndUpdate != "yes" {
 		logger.Debug(f("'Public IP' config is disabled. Skipping."))

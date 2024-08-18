@@ -36,7 +36,7 @@ func getUniqueDomains(config *config.NrpConfig) []string {
 }
 
 func GenerateConfig(config *config.NrpConfig) bool {
-	logger = blablo.NewLogger("dnsmsq-cfg", string(cmdArgs.LogLevel))
+	logger = blablo.NewLogger("dnsmsq-cfg", string(cmdArgs.LogLevel), false)
 	logger.Debug(f("Processing Dnsmasq config: %s%+v%s", c.Yellow, config.Dnsmasq, c.Reset))
 	if config.Squid.UseDnsmasq != "yes" {
 		logger.Debug(f("Dnsmasq config is disabled in 'squid' section. Skipping config generation."))

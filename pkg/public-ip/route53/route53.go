@@ -53,7 +53,7 @@ func getHostedZoneId(svc *route53.Route53, domain string) (string, error) {
 }
 
 func UpdateDomainIp(domain, ip, dryRun string) bool {
-	logger = blablo.NewLogger("route53", cmdArgs.LogLevel)
+	logger = blablo.NewLogger("route53", cmdArgs.LogLevel, false)
 
 	logger.Debug("Creating AWS CDK session")
 	mySession := session.Must(session.NewSession(&aws.Config{

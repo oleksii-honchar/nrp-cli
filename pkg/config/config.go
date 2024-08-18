@@ -25,7 +25,7 @@ var nrpSvcDefaultConfig *NrpServiceConfig
 
 // Should be called first before any other pkg function calls
 func Init() (*NrpConfig, error) {
-	logger = blablo.NewLogger("config", cmdArgs.LogLevel)
+	logger = blablo.NewLogger("config", cmdArgs.LogLevel, false)
 	logger.Debug("Init 'Config'")
 
 	logger.Debug("Loading config and merging with defaults")

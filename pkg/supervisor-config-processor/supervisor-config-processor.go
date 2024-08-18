@@ -22,7 +22,7 @@ var f = fmt.Sprintf
 var logger *blablo.Logger
 
 func GenerateConfig(config *config.NrpConfig) bool {
-	logger = blablo.NewLogger("supvsr-cfg", string(cmdArgs.LogLevel))
+	logger = blablo.NewLogger("supvsr-cfg", string(cmdArgs.LogLevel), false)
 	logger.Debug(f("Processing 'supervisor' config %s%+v%s", c.Yellow, config.Supervisor, c.Reset))
 
 	confTemplate, err := template.New("supervisor-config").Parse(string(SupervisorConfTmpl))

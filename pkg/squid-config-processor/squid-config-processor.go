@@ -22,7 +22,7 @@ var f = fmt.Sprintf
 var logger *blablo.Logger
 
 func GenerateConfig(config *config.NrpConfig) bool {
-	logger = blablo.NewLogger("squid-cfg", string(cmdArgs.LogLevel))
+	logger = blablo.NewLogger("squid-cfg", string(cmdArgs.LogLevel), false)
 	logger.Debug(f("Processing Squid config: %s%+v%s", c.Yellow, config.Squid, c.Reset))
 	if config.Squid.Use != "yes" {
 		logger.Debug(f("Squid config is disabled. Skipping config generation."))

@@ -65,7 +65,7 @@ func Init() bool {
 		return false
 	}
 
-	logger = blablo.NewLogger("cmd-args", string(LogLevel))
+	logger = blablo.NewLogger("cmd-args", string(LogLevel), false)
 
 	logger.Debug(c.WithGray247(f("cmd arg 'config' = %s", ConfigPath)))
 	logger.Debug(c.WithGray247(f("cmd arg 'log-level' = %s", LogLevel)))
