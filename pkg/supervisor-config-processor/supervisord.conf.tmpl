@@ -7,7 +7,7 @@ user=root
 {{if eq .Squid.Use "yes"}}
 [program:squid]
 # squid -NYCd 1 : -N - stay in foreground, -Y - debug mode, -C - use config, -d 1 - lowest debug level
-command=/usr/local/bin/prefix-log /usr/sbin/squid -NYCd 1
+command=/usr/local/bin/log-processor /usr/sbin/squid -NYCd 1
 autostart=true
 autorestart=true
 stdout_events_enabled=true
@@ -21,7 +21,7 @@ stopsignal=QUIT
 
 {{if eq .Squid.UseDnsmasq "yes"}}
 [program:dnsmasq]
-command=/usr/local/bin/prefix-log /usr/sbin/dnsmasq -k
+command=/usr/local/bin/log-processor /usr/sbin/dnsmasq -k
 autostart=true
 autorestart=true
 stdout_events_enabled=true
@@ -34,7 +34,7 @@ stopsignal=QUIT
 {{end}}
 
 [program:nginx]
-command=/usr/local/bin/prefix-log-nginx /usr/sbin/nginx
+command=/usr/local/bin/log-processor /usr/sbin/nginx
 autostart=true
 autorestart=true
 stdout_events_enabled=true

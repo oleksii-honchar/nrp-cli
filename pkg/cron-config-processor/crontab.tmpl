@@ -1,9 +1,9 @@
 {{ if eq .CheckAndUpdate "yes" }}
 # NRP Public IP check and update
-{{.CronSchedule}} echo "cron       | Scheduled execution {{.Schedule}}" > /proc/1/fd/1 2>/proc/1/fd/2
-{{.CronSchedule}} {{.Task}} > /proc/1/fd/1 2>/proc/1/fd/2
+{{.CronSchedule}} SUPERVISOR_PROCESS_NAME=cron /usr/local/bin/log-processor echo "Scheduled execution {{.Schedule}}" > /proc/1/fd/1 2>/proc/1/fd/2
+{{.CronSchedule}} SUPERVISOR_PROCESS_NAME=nrp-cli /usr/local/bin/log-processor {{.Task}} > /proc/1/fd/1 2>/proc/1/fd/2
 {{end}}
 
 # Certbot: every 1d
-0 0 * * * echo "cron       | Scheduled execution 1d" > /proc/1/fd/1 2>/proc/1/fd/2
-0 0 * * * /usr/local/bin/prefix-log-certbot certbot -v --max-log-backups 10 renew --post-hook "nginx -s reload" > /proc/1/fd/1 2>/proc/1/fd/2
+0 0 * * * SUPERVISOR_PROCESS_NAME=cron /usr/local/bin/log-processor echo "Scheduled execution 1d" > /proc/1/fd/1 2>/proc/1/fd/2
+0 0 * * * SUPERVISOR_PROCESS_NAME=certbot /usr/local/bin/log-processor certbot -v --max-log-backups 10 renew --post-hook "nginx -s reload" > /proc/1/fd/1 2>/proc/1/fd/2

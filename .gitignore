@@ -30,3 +30,4 @@ squid.conf
 dnsmasq.conf
 nginx-config/cors-servers.conf
 output/supervisord.conf
+.DS_Store
