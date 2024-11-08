@@ -54,7 +54,7 @@ run-nginx: stop-nginx ## run nginx
       -v ./nginx-config:/etc/nginx \
       -v /etc/localtime:/etc/localtime:ro \
       -v ./letsencrypt:/etc/letsencrypt \
-      tuiteraz/nginx-more:1.25.2-2
+      tuiteraz/nginx-more:1.27.2-1.2.0
 	docker logs nginx-more
 
 stop-nginx: ## stop nginx

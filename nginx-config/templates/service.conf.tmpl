@@ -15,7 +15,7 @@ server {
 
   server_name {{.DomainName}} www.{{.DomainName}};
 
-  access_log /var/log/nginx/access.log proxy;
+  access_log /var/log/nginx/access.log proxy_json;
   error_log  /var/log/nginx/error.log warn; # to mute block-exploits notice spam
 
   include /etc/nginx/includes/default-locations.conf;
